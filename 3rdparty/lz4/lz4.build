@@ -1,0 +1,4 @@
+if windows Compiler cl
+Type static_lib
+SourceDirectory lib
+IncludedSourceFiles lz4.c

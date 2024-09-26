@@ -1,0 +1,11 @@
+Assembly %_FileName
+Type     static_lib
+
+if windows Compiler cl
+
+SourceDirectory        source
+BuildDirectory         bin
+IntermediateDirectory  int
+
+CompilerFlags          /EHsc
+Includes               source soundtouch

@@ -6,6 +6,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFileInfo>
 #include <QtCore/QMetaObject>
+#include <QtCore/QDir>
 #include <QtGui/QAction>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QDesktopServices>

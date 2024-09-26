@@ -1,0 +1,660 @@
+Assembly pcsx2
+Type     static_lib
+
+if windows Compiler cl
+if windows Assembler ml64
+
+Depends common ../common/
+
+if no_simd {
+    Depends GS | isa=sse4
+    Depends GS | isa=avx
+    Depends GS | isa=avx2
+}
+
+## todo
+WarningFlags -Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Wno-missing-field-initializers
+if pgo_generate CompilerFlags -fprofile-generate
+if pgo_optimize CompilerFlags -fprofile-use
+if pgo_generate|pgo_optimize CompilerFlags -fprofile-dir="profile"
+if asan LinkerFlags -faddress=sanitize ; Defines ASAN_WORKAROUND
+##
+
+CompilerFlags /std:c++20 /arch:AVX2 /Zc:preprocessor /fp:contract /GS- /EHsc #-O3 -fno-lto
+
+if mac LinkerFlags -Wl,-dead_strip,-dead_strip_dylibs
+
+Includes [
+    .
+    ..
+    ../common/include
+    ../deps/include
+    ../deps/include/SDL2
+    ../3rdparty/include
+    ../3rdparty/jpgd
+    ../3rdparty/fmt/include
+    ../3rdparty/ffmpeg/include
+    ../3rdparty/glad/include
+    ../3rdparty/fast_float/include
+    ../3rdparty/libjpeg-turbo
+    ../3rdparty/libjpeg-turbo/gen
+    ../3rdparty/libpng
+    ../3rdparty/libwebp/src
+    ../3rdparty/zlib
+    ../3rdparty/ccc/src
+    ../3rdparty/lzma
+    ../3rdparty/lzma/include
+    ../3rdparty/lz4/lib
+    ../3rdparty/libchdr/include
+    ../3rdparty/demangler/include
+    ../3rdparty/winwil/include
+    ../3rdparty/freesurround/include
+    ../3rdparty/cubeb/include
+    ../3rdparty/SoundTouch/SoundTouch
+    ../3rdparty/simpleini/include
+    ../3rdparty/imgui/include
+    ../3rdparty/svnrev
+    ../3rdparty/cpuinfo/include
+    ../3rdparty/rapidyaml/include
+    ../3rdparty/rcheevos/include
+    ../3rdparty/vulkan/include
+    ../3rdparty/d3d12memalloc/include
+    ../3rdparty/libzip/lib
+    ../3rdparty/libzip/msvc
+    ../3rdparty/discord-rpc/include
+    ../3rdparty/rainterface
+]
+
+Defines C4_NO_DEBUG_BREAK
+
+if x86   Includes ../3rdparty/xbyak
+if x86   Defines _M_X86
+if arm64 Defines _M_ARM64
+
+if windows Defines [
+    WINVER=0x0A00
+    _WIN32_WINNT=0x0A00
+    WIN32_LEAN_AND_MEAN
+    WIL_SUPPRESS_EXCEPTIONS
+    
+    #NDEBUG
+    _SECURE_SCL_=0
+    __SSE4_1__
+    __WIN32__
+    WIN32
+    _WIN32
+    _WINDOWS
+    NOMINMAX
+    _CRT_NONSTDC_NO_WARNINGS
+    _CRT_SECURE_NO_WARNINGS
+    _CRT_SECURE_NO_DEPRECATE
+    _SCL_SECURE_NO_WARNINGS
+    _HAS_EXCEPTIONS=0
+    _UNICODE
+    UNICODE
+]
+
+Defines JPEG_LIB_VERSION=62 ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION
+Defines [
+    GIT_REV=\"!(git rev-parse --short HEAD)\"
+    GIT_DATE=\"!(git log -1 --format=%cd --date=local)\"
+    GIT_HASH=\"!(git rev-parse HEAD)\"
+    GIT_TAG=\"\"
+]
+
+
+# main pcsx2 source files
+PCSX2Sources [
+    Achievements.cpp
+    Cache.cpp
+    COP0.cpp
+    COP2.cpp
+    Counters.cpp
+    Dmac.cpp
+    GameDatabase.cpp
+    Elfheader.cpp
+    FW.cpp
+    FiFo.cpp
+    FPU.cpp
+    GameList.cpp
+    Gif.cpp
+    Gif_Logger.cpp
+    Gif_Unit.cpp
+    GS.cpp
+    GSDumpReplayer.cpp
+    Host.cpp
+    Hotkeys.cpp
+    Hw.cpp
+    HwRead.cpp
+    HwWrite.cpp
+    LayeredSettingsInterface.cpp
+    INISettingsInterface.cpp
+    Interpreter.cpp
+    IopBios.cpp
+    IopCounters.cpp
+    IopDma.cpp
+    IopGte.cpp
+    IopHw.cpp
+    IopIrq.cpp
+    IopMem.cpp
+    PINE.cpp
+    Mdec.cpp
+    Memory.cpp
+    MMI.cpp
+    MTGS.cpp
+    MTVU.cpp
+    Patch.cpp
+    Pcsx2Config.cpp
+    PerformanceMetrics.cpp
+    PrecompiledHeader.cpp
+    R3000A.cpp
+    R3000AInterpreter.cpp
+    R3000AOpcodeTables.cpp
+    R5900.cpp
+    R5900OpcodeImpl.cpp
+    R5900OpcodeTables.cpp
+    SaveState.cpp
+    ShiftJisToUnicode.cpp
+    Sif.cpp
+    Sif0.cpp
+    Sif1.cpp
+    sif2.cpp
+    SIO/Sio.cpp
+    SIO/Sio2.cpp
+    SIO/Sio0.cpp
+    SIO/Multitap/MultitapProtocol.cpp
+    SIO/Memcard/MemoryCardFile.cpp
+    SIO/Memcard/MemoryCardFolder.cpp
+    SIO/Memcard/MemoryCardProtocol.cpp
+    SourceLog.cpp
+    SPR.cpp
+    StateWrapper.cpp
+    Vif0_Dma.cpp
+    Vif1_Dma.cpp
+    Vif1_MFIFO.cpp
+    Vif.cpp
+    Vif_Codes.cpp
+    Vif_Transfer.cpp
+    Vif_Unpack.cpp
+    VMManager.cpp
+    vtlb.cpp
+    VU0.cpp
+    VUmicro.cpp
+    VU0micro.cpp
+    VU0microInterp.cpp
+    VU1micro.cpp
+    VU1microInterp.cpp
+    VUflags.cpp
+    VUmicroMem.cpp
+    VUops.cpp
+]
+
+# CDVD sources
+CDVDSources [
+    CDVD/BlockdumpFileReader.cpp
+    CDVD/Ps1CD.cpp
+    CDVD/CDVDcommon.cpp
+    CDVD/CDVD.cpp
+    CDVD/CDVDdiscReader.cpp
+    CDVD/CDVDisoReader.cpp
+    CDVD/CDVDdiscThread.cpp
+    CDVD/FlatFileReader.cpp
+    CDVD/InputIsoFile.cpp
+    CDVD/IsoHasher.cpp
+    CDVD/IsoReader.cpp
+    CDVD/OutputIsoFile.cpp
+    CDVD/ChdFileReader.cpp
+    CDVD/CsoFileReader.cpp
+    CDVD/GzippedFileReader.cpp
+    CDVD/ThreadedFileReader.cpp
+]
+
+SPU2Sources [
+    SPU2/ADSR.cpp
+    SPU2/Debug.cpp
+    SPU2/Dma.cpp
+    SPU2/Mixer.cpp
+    SPU2/spu2.cpp
+    SPU2/ReadInput.cpp
+    SPU2/RegTable.cpp
+    SPU2/Reverb.cpp
+    SPU2/spu2freeze.cpp
+    SPU2/spu2sys.cpp
+    SPU2/Wavedump_wav.cpp
+]
+
+SPU2SourcesUnshared SPU2/ReverbResample.cpp
+
+# DEV9 sources
+DEV9Sources [
+    DEV9/AdapterUtils.cpp
+    DEV9/ATA/Commands/ATA_Command.cpp
+    DEV9/ATA/Commands/ATA_CmdDMA.cpp
+    DEV9/ATA/Commands/ATA_CmdExecuteDeviceDiag.cpp
+    DEV9/ATA/Commands/ATA_CmdNoData.cpp
+    DEV9/ATA/Commands/ATA_CmdPIOData.cpp
+    DEV9/ATA/Commands/ATA_CmdSMART.cpp
+    DEV9/ATA/Commands/ATA_SCE.cpp
+    DEV9/ATA/ATA_Info.cpp
+    DEV9/ATA/ATA_State.cpp
+    DEV9/ATA/ATA_Transfer.cpp
+    DEV9/ATA/HddCreate.cpp
+    DEV9/InternalServers/DHCP_Logger.cpp
+    DEV9/InternalServers/DHCP_Server.cpp
+    DEV9/InternalServers/DNS_Logger.cpp
+    DEV9/InternalServers/DNS_Server.cpp
+    DEV9/PacketReader/ARP/ARP_Packet.cpp
+    DEV9/PacketReader/ARP/ARP_PacketEditor.cpp
+    DEV9/PacketReader/IP/ICMP/ICMP_Packet.cpp
+    DEV9/PacketReader/IP/TCP/TCP_Options.cpp
+    DEV9/PacketReader/IP/TCP/TCP_Packet.cpp
+    DEV9/PacketReader/IP/UDP/DHCP/DHCP_Options.cpp
+    DEV9/PacketReader/IP/UDP/DHCP/DHCP_Packet.cpp
+    DEV9/PacketReader/IP/UDP/DNS/DNS_Classes.cpp
+    DEV9/PacketReader/IP/UDP/DNS/DNS_Packet.cpp
+    DEV9/PacketReader/IP/UDP/UDP_Packet.cpp
+    DEV9/PacketReader/IP/IP_Options.cpp
+    DEV9/PacketReader/IP/IP_Packet.cpp
+    DEV9/PacketReader/EthernetFrame.cpp
+    DEV9/PacketReader/EthernetFrameEditor.cpp
+    DEV9/Sessions/BaseSession.cpp
+    DEV9/Sessions/ICMP_Session/ICMP_Session.cpp
+    DEV9/Sessions/TCP_Session/TCP_Session.cpp
+    DEV9/Sessions/TCP_Session/TCP_Session_In.cpp
+    DEV9/Sessions/TCP_Session/TCP_Session_Out.cpp
+    DEV9/Sessions/UDP_Session/UDP_FixedPort.cpp
+    DEV9/Sessions/UDP_Session/UDP_Session.cpp
+    DEV9/smap.cpp
+    DEV9/sockets.cpp
+    DEV9/DEV9.cpp
+    DEV9/flash.cpp
+    DEV9/pcap_io.cpp
+    DEV9/net.cpp
+]
+
+USBSources [
+    USB/USB.cpp
+    USB/deviceproxy.cpp
+    USB/qemu-usb/bus.cpp
+    USB/qemu-usb/core.cpp
+    USB/qemu-usb/desc.cpp
+    USB/qemu-usb/hid.cpp
+    USB/qemu-usb/input-keymap-qcode-to-qnum.cpp
+    USB/qemu-usb/usb-ohci.cpp
+    USB/shared/ringbuffer.cpp
+    USB/usb-eyetoy/cam-jpeg.cpp
+    USB/usb-eyetoy/jo_mpeg.cpp
+    USB/usb-eyetoy/usb-eyetoy-webcam.cpp
+    USB/usb-hid/usb-hid.cpp
+    USB/usb-lightgun/guncon2.cpp
+    USB/usb-mic/audiodev-cubeb.cpp
+    USB/usb-mic/usb-headset.cpp
+    USB/usb-mic/usb-mic.cpp
+    USB/usb-msd/usb-msd.cpp
+    USB/usb-pad/lg/lg_ff.cpp
+    USB/usb-pad/usb-buzz.cpp
+    USB/usb-pad/usb-gametrak.cpp
+    USB/usb-pad/usb-realplay.cpp
+    USB/usb-pad/usb-pad-ff.cpp
+    USB/usb-pad/usb-pad-sdl-ff.cpp
+    USB/usb-pad/usb-pad.cpp
+    USB/usb-pad/usb-seamic.cpp
+    USB/usb-pad/usb-train.cpp
+    USB/usb-pad/usb-trance-vibrator.cpp
+    USB/usb-pad/usb-turntable.cpp
+    USB/usb-printer/usb-printer.cpp
+]
+
+# Host PAD
+PADSources [
+    SIO/Pad/Pad.cpp
+    SIO/Pad/PadBase.cpp
+    SIO/Pad/PadDualshock2.cpp
+    SIO/Pad/PadGuitar.cpp
+    SIO/Pad/PadJogcon.cpp
+    SIO/Pad/PadNegcon.cpp
+    SIO/Pad/PadPopn.cpp
+    SIO/Pad/PadNotConnected.cpp
+]
+
+# GS sources
+GSSourcesUnshared [
+    GS/GSBlock.cpp
+    GS/GSLocalMemoryMultiISA.cpp
+    GS/GSXXH.cpp
+    GS/Renderers/Common/GSVertexTraceFMM.cpp
+    GS/Renderers/HW/GSRendererHWMultiISA.cpp
+    GS/Renderers/SW/GSDrawScanline.cpp
+    GS/Renderers/SW/GSRasterizer.cpp
+    GS/Renderers/SW/GSRendererSW.cpp
+]
+
+if x86 GSSourcesUnshared [
+    GS/Renderers/SW/GSDrawScanlineCodeGenerator.all.cpp
+    GS/Renderers/SW/GSSetupPrimCodeGenerator.all.cpp
+]
+
+if arm64 GSSourcesUnshared [
+    GS/Renderers/SW/GSDrawScanlineCodeGenerator.arm64.cpp
+    GS/Renderers/SW/GSSetupPrimCodeGenerator.arm64.cpp
+]
+
+GSSources [
+    GS/GS.cpp
+    GS/GSCapture.cpp
+    GS/GSClut.cpp
+    GS/GSDrawingContext.cpp
+    GS/GSDump.cpp
+    GS/GSLocalMemory.cpp
+    GS/GSLzma.cpp
+    GS/GSPerfMon.cpp
+    GS/GSPng.cpp
+    GS/GSRingHeap.cpp
+    GS/GSState.cpp
+    GS/GSTables.cpp
+    GS/GSUtil.cpp
+    GS/GSVector.cpp
+    GS/MultiISA.cpp
+    GS/Renderers/Common/GSDevice.cpp
+    GS/Renderers/Common/GSDirtyRect.cpp
+    GS/Renderers/Common/GSFunctionMap.cpp
+    GS/Renderers/Common/GSRenderer.cpp
+    GS/Renderers/Common/GSTexture.cpp
+    GS/Renderers/Common/GSVertexTrace.cpp
+    GS/Renderers/Null/GSRendererNull.cpp
+    GS/Renderers/HW/GSHwHack.cpp
+    GS/Renderers/HW/GSRendererHW.cpp
+    GS/Renderers/HW/GSTextureCache.cpp
+    GS/Renderers/HW/GSTextureReplacementLoaders.cpp
+    GS/Renderers/HW/GSTextureReplacements.cpp
+    GS/Renderers/SW/GSTextureCacheSW.cpp
+]
+
+graphics_api opengl
+if vulkan graphics_api vulkan
+
+if graphics_api == opengl {
+    GSSources [
+        GS/Renderers/OpenGL/GLContext.cpp
+        GS/Renderers/OpenGL/GLProgram.cpp
+        GS/Renderers/OpenGL/GLShaderCache.cpp
+        GS/Renderers/OpenGL/GLState.cpp
+        GS/Renderers/OpenGL/GLStreamBuffer.cpp
+        GS/Renderers/OpenGL/GSDeviceOGL.cpp
+        GS/Renderers/OpenGL/GSTextureOGL.cpp
+    ]
+ 
+    #target_link_libraries(PCSX2_FLAGS INTERFACE glad)
+    #target_link_libraries(PCSX2_FLAGS INTERFACE opengl32.lib WinPixEventRuntime::WinPixEventRuntime)
+
+    if windows  GSSources GS/Renderers/OpenGL/GLContextWGL.cpp
+
+    if !windows GSSources GS/Renderers/OpenGL/GLContextEGL.cpp
+    if !windows GSSources GS/Renderers/OpenGL/GLContextEGLX11.cpp
+    if !windows GSSources GS/Renderers/OpenGL/GLContextEGLWayland.cpp
+}
+
+if graphics_api == vulkan {
+    GSSources [
+        GS/Renderers/Vulkan/GSDeviceVK.cpp
+        GS/Renderers/Vulkan/GSTextureVK.cpp
+        GS/Renderers/Vulkan/vk_mem_alloc.cpp
+        GS/Renderers/Vulkan/VKBuilders.cpp
+        GS/Renderers/Vulkan/VKLoader.cpp
+        GS/Renderers/Vulkan/VKShaderCache.cpp
+        GS/Renderers/Vulkan/VKStreamBuffer.cpp
+        GS/Renderers/Vulkan/VKSwapChain.cpp
+    ]
+    #target_link_libraries(PCSX2_FLAGS INTERFACE vulkan-headers)
+    #target_include_directories(PCSX2_FLAGS INTERFACE ${SHADERC_INCLUDE_DIR})
+}
+
+GSMetalShaders [
+    GS/Renderers/Metal/cas.metal
+    GS/Renderers/Metal/convert.metal
+    GS/Renderers/Metal/present.metal
+    GS/Renderers/Metal/merge.metal
+    GS/Renderers/Metal/misc.metal
+    GS/Renderers/Metal/interlace.metal
+    GS/Renderers/Metal/tfx.metal
+    GS/Renderers/Metal/fxaa.metal
+]
+
+if windows {
+    DEV9Sources [
+        DEV9/Win32/pcap_io_win32.cpp
+        DEV9/Win32/tap-win32.cpp
+    ]
+
+    USBSources [
+        USB/usb-eyetoy/cam-windows.cpp
+    ]
+
+    GSSources [
+        GS/Renderers/DX11/D3D.cpp
+        GS/Renderers/DX11/D3D11ShaderCache.cpp
+        GS/Renderers/DX11/GSDevice11.cpp
+        GS/Renderers/DX11/GSTexture11.cpp
+        GS/Renderers/DX12/D3D12Builders.cpp
+        GS/Renderers/DX12/D3D12DescriptorHeapManager.cpp
+        GS/Renderers/DX12/D3D12ShaderCache.cpp
+        GS/Renderers/DX12/D3D12StreamBuffer.cpp
+        GS/Renderers/DX12/GSDevice12.cpp
+        GS/Renderers/DX12/GSTexture12.cpp
+    ]
+}
+
+if linux {
+    USBSources USB/usb-eyetoy/cam-linux.cpp
+}
+
+if !windows if !linux USBSources USB/usb-eyetoy/cam-noop.cpp
+
+# IPU sources
+IPUSources [
+    IPU/IPU.cpp
+    IPU/IPU_Fifo.cpp
+    IPU/IPUdma.cpp
+]
+
+IPUSourcesUnshared [
+    IPU/IPU_MultiISA.cpp
+    IPU/IPUdither.cpp
+    IPU/yuv2rgb.cpp
+]
+
+if no_simd {
+    # TODO
+    Defines MULTI_ISA_SHARED_COMPILATION
+}
+
+if !no_simd {
+    GSSources $GSSourcesUnshared
+    IPUSources $IPUSourcesUnshared
+    SPU2Sources $SPU2SourcesUnshared
+}
+
+# DebugTools sources
+DebugToolsSources [
+    DebugTools/DebugInterface.cpp
+    DebugTools/DisassemblyManager.cpp
+    DebugTools/ExpressionParser.cpp
+    DebugTools/MIPSAnalyst.cpp
+    DebugTools/MipsAssembler.cpp
+    DebugTools/MipsAssemblerTables.cpp
+    DebugTools/MipsStackWalk.cpp
+    DebugTools/Breakpoints.cpp
+    DebugTools/SymbolGuardian.cpp
+    DebugTools/DisR3000A.cpp
+    DebugTools/DisR5900asm.cpp
+    DebugTools/DisVU0Micro.cpp
+    DebugTools/DisVU1Micro.cpp
+    DebugTools/BiosDebugData.cpp
+]
+
+HostSources [
+    Host/AudioStream.cpp
+    Host/CubebAudioStream.cpp
+    Host/SDLAudioStream.cpp
+]
+
+ImGuiSources [
+    ImGui/FullscreenUI.cpp
+    ImGui/ImGuiFullscreen.cpp
+    ImGui/ImGuiManager.cpp
+    ImGui/ImGuiOverlays.cpp
+]
+
+InputSources [
+    Input/InputManager.cpp
+    Input/InputSource.cpp
+    Input/SDLInputSource.cpp
+]
+
+if apple {
+    GSSources [
+        GS/Renderers/Metal/GSDeviceMTL.mm
+        GS/Renderers/Metal/GSMTLDeviceInfo.mm
+        GS/Renderers/Metal/GSTextureMTL.mm
+    ]
+}
+
+if windows {
+    # RAIntegration is only supported on Windows.
+    #target_compile_definitions(PCSX2_FLAGS INTERFACE ENABLE_RAINTEGRATION)
+    #target_link_libraries(PCSX2_FLAGS INTERFACE rainterface)
+ 
+    InputSources [
+        Input/DInputSource.cpp
+        Input/XInputSource.cpp
+    ]
+}
+
+# Linux sources
+if linux LinuxSources [
+    CDVD/Linux/DriveUtility.cpp
+    CDVD/Linux/IOCtlSrc.cpp
+]
+
+if mac OSXSources [
+    CDVD/Darwin/DriveUtility.cpp
+    CDVD/Darwin/IOCtlSrc.cpp
+]
+
+if freebsd FreeBSDSources [
+    CDVD/Darwin/DriveUtility.cpp
+    CDVD/Darwin/IOCtlSrc.cpp
+]
+
+# ps2 sources
+ps2Sources [
+    ps2/BiosTools.cpp
+    ps2/pgif.cpp
+    ps2/Iop/IopHwRead.cpp
+    ps2/Iop/IopHwWrite.cpp
+    ps2/Iop/PsxBios.cpp
+]
+
+# RDebug sources
+RDebugSources [
+    RDebug/deci2.cpp
+    RDebug/deci2_dbgp.cpp
+    RDebug/deci2_dcmp.cpp
+    RDebug/deci2_drfp.cpp
+    RDebug/deci2_iloadp.cpp
+    RDebug/deci2_netmp.cpp
+    RDebug/deci2_ttyp.cpp
+]
+
+# Recording sources
+RecordingSources [
+    Recording/InputRecording.cpp
+    Recording/InputRecordingControls.cpp
+    Recording/InputRecordingFile.cpp
+    Recording/PadData.cpp
+    Recording/Utilities/InputRecordingLogger.cpp
+]
+
+# Windows sources
+WindowsSources [
+    CDVD/Windows/DriveUtility.cpp
+    CDVD/Windows/IOCtlSrc.cpp
+    windows/Optimus.cpp
+]
+
+# x86 sources
+x86Sources [
+    x86/BaseblockEx.cpp
+	x86/microVU.cpp
+    x86/iCOP0.cpp
+    x86/iCore.cpp
+    x86/iFPU.cpp
+    x86/iFPUd.cpp
+    x86/iMMI.cpp
+    x86/iR3000A.cpp
+    x86/iR3000Atables.cpp
+    x86/iR5900Analysis.cpp
+    x86/iR5900Misc.cpp
+    x86/ix86-32/iCore.cpp
+    x86/ix86-32/iR5900.cpp
+    x86/ix86-32/iR5900Arit.cpp
+    x86/ix86-32/iR5900AritImm.cpp
+    x86/ix86-32/iR5900Branch.cpp
+    x86/ix86-32/iR5900Jump.cpp
+    x86/ix86-32/iR5900LoadStore.cpp
+    x86/ix86-32/iR5900Move.cpp
+    x86/ix86-32/iR5900MultDiv.cpp
+    x86/ix86-32/iR5900Shift.cpp
+    x86/ix86-32/iR5900Templates.cpp
+    x86/ix86-32/recVTLB.cpp
+    x86/newVif_Dynarec.cpp
+    x86/newVif_UnpackSSE.cpp
+]
+
+# ARM64
+arm64Sources [
+    arm64/AsmHelpers.cpp
+    arm64/newVif_Dynarec.cpp
+    arm64/newVif_UnpackNEON.cpp
+    arm64/RecStubs.cpp
+]
+
+# These ones benefit a lot from LTO
+LTOSources [
+    $PCSX2Sources
+    $IPUSources
+    $SPU2Sources
+    $GSSources
+]
+
+#target_link_libraries(PCSX2_FLAGS INTERFACE zydis)
+#target_link_libraries(PCSX2_FLAGS INTERFACE vixl)
+if x86 LTOSources $x86Sources
+if arm64 LTOSources $arm64Sources
+
+# common Sources
+IncludedSourceFiles [
+    $LTOSources
+    $CDVDSources
+    $DebugToolsSources
+    $DEV9Sources
+    $PADSources
+    $RecordingSources
+    $HostSources
+    $ImGuiSources
+    $InputSources
+    $USBSources
+    $ps2Sources
+]
+
+# platform sources
+#target_link_libraries(PCSX2_FLAGS INTERFACE PkgConfig::LIBUDEV)
+
+if windows IncludedSourceFiles $WindowsSources
+if linux   IncludedSourceFiles $LinuxSources
+if apple   IncludedSourceFiles $OSXSources
+if freebsd IncludedSourceFiles $FreeBSDSourcesSources
+
+if apple   LinkerFlags         -framework QuartzCore -framework Metal
+
+AssertCPUExtension avx2

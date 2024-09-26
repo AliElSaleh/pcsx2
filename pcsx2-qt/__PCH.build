@@ -1,0 +1,7 @@
+Type pch
+Compiler cl
+CompilerFlags /std:c++20 /arch:AVX2 /fp:contract /GS- /Zc:__cplusplus
+IncludedSourceFiles PrecompiledHeader.h
+Includes . .. ../common/include ../common ../deps/include ../3rdparty/fmt/include
+Assembly PrecompiledHeader
+BuildDirectory .

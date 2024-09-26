@@ -1,0 +1,30 @@
+Assembly %_FileName
+Type     static_lib
+
+if windows Compiler cl
+
+SourceDirectory        src
+BuildDirectory         bin
+IntermediateDirectory  int
+
+Includes               include src ../rapidjson/include
+
+IncludedSourceFiles [
+	discord_rpc.cpp
+	rpc_connection.cpp
+	serialization.cpp
+	serialization.h
+]
+
+if windows IncludedSourceFiles [
+	connection_win.cpp
+	discord_register_win.cpp
+]
+
+if apple IncludedSourceFiles [
+	discord_register_osx.m
+]
+
+if unix IncludedSourceFiles connection_unix.cpp
+
+if linux IncludedSourceFiles discord_register_linux.cpp

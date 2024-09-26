@@ -1,0 +1,11 @@
+Assembly ccc
+Type     static_lib
+
+if windows Compiler cl
+
+SourceDirectory        src
+BuildDirectory         bin
+IntermediateDirectory  int
+
+CompilerFlags          /std:c++20 /EHsc
+Includes               src

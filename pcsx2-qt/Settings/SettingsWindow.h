@@ -3,6 +3,7 @@
 
 #pragma once
 #include "ui_SettingsWindow.h"
+#include "common/Pcsx2Defs.h"
 #include <QtCore/QMap>
 #include <QtCore/QString>
 #include <QtWidgets/QWidget>

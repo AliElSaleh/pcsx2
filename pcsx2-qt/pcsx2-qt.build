@@ -1,0 +1,316 @@
+Assembly %_FileName
+Type     app
+RunAssembly
+
+BuildDirectory ../bin
+
+if windows Icon ../pcsx2/windows/AppIcon.ico
+
+if windows Compiler cl
+if windows Assembler ml64
+
+Depends pcsx2         ../pcsx2 | no_simd
+Depends lzma          ../3rdparty/lzma
+Depends imgui         ../3rdparty/imgui
+Depends rapidyaml     ../3rdparty/rapidyaml
+Depends libchdr       ../3rdparty/libchdr
+Depends libzip        ../3rdparty/libzip
+Depends libpng        ../3rdparty/libpng
+Depends cpuinfo       ../3rdparty/cpuinfo
+Depends cubeb         ../3rdparty/cubeb
+Depends rcheevos      ../3rdparty/rcheevos
+Depends discord-rpc   ../3rdparty/discord-rpc
+Depends simpleini     ../3rdparty/simpleini
+Depends freesurround  ../3rdparty/freesurround
+Depends soundtouch    ../3rdparty/soundtouch
+Depends demangler     ../3rdparty/demangler
+Depends ccc           ../3rdparty/ccc
+Depends d3d12memalloc ../3rdparty/d3d12memalloc
+Depends rainterface   ../3rdparty/rainterface
+
+if !../deps/ if windows {
+    
+    # this would've been so nice to have but unfortunately the pcsx2 dev team are so retarded that
+    # they zip the dependencies in a format that windows does not recognize natively, therefore 
+    # the user would have to go and download third-party software just to extract the contents of 
+    # the damn thing, where we could just do that easily without 7-Zip
+    # i just hate how complicated they make their life for no reason at all.
+       #PreBuild.Download https://github.com/PCSX2/pcsx2-windows-dependencies/releases/download/latest-windows-dependencies/pcsx2-windows-dependencies.7z ../
+
+    # i'll be hosting the dependencies on my own github repo, until they smarten up and simplify things
+
+    # TODO: once PreDepend is implement, update this...
+    #PreDepend.Log pcsx2 Windows Dependencies not found. Acquiring latest binaries... (this may take a few minutes to download)
+    PreBuild.Cmd powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/AliElSaleh/pcxs2-windows-dependencies/releases/download/v1.0.0/pcsx2-windows-dependencies.zip', '..\pcsx2-windows-dependencies.zip')"
+    PreBuild.Cmd powershell -Command "Expand-Archive -Path "..\pcsx2-windows-dependencies.zip" -DestinationPath "../deps""
+    #PreDepend.Download https://github.com/AliElSaleh/pcxs2-windows-dependencies/releases/download/v1.0.0/pcsx2-windows-dependencies.zip ../
+    #PreDepend.Unzip ../pcsx2-windows-dependencies.zip
+    #PreDepend.Delete ../pcsx2-windows-dependencies.zip
+    PreBuild.Delete ../pcsx2-windows-dependencies.zip
+}
+
+CompilerFlags /std:c++20 /arch:AVX2 /fp:contract /GS- /EHsc /Zc:__cplusplus
+
+Includes [
+    .
+    ..
+    ../common
+    ../common/include
+    ../pcsx2
+    ../deps/include
+    ../deps/include/SDL2
+    ../3rdparty/include
+    ../3rdparty/jpgd
+    ../3rdparty/fmt/include
+    ../3rdparty/fast_float/include
+    ../3rdparty/libjpeg-turbo
+    ../3rdparty/libjpeg-turbo/gen
+    ../3rdparty/libpng
+    ../3rdparty/libwebp/src
+    ../3rdparty/zlib
+    ../3rdparty/ccc/src
+    ../3rdparty/lzma
+    ../3rdparty/lz4/lib
+    ../3rdparty/libchdr/include
+    ../3rdparty/demangler/include
+    ../3rdparty/winwil/include
+    ../3rdparty/freesurround/include
+    ../3rdparty/cubeb/include
+    ../3rdparty/SoundTouch/SoundTouch
+    ../3rdparty/simpleini/include
+    ../3rdparty/imgui/include
+    ../3rdparty/svnrev
+    ../3rdparty/cpuinfo/include
+    ../3rdparty/lzma/include
+    Generated
+]
+
+if windows Defines [
+    WINVER=0x0A00
+    _WIN32_WINNT=0x0A00
+    WIN32_LEAN_AND_MEAN
+    WIL_SUPPRESS_EXCEPTIONS
+    
+    #NDEBUG
+    _SECURE_SCL_=0
+    __SSE4_1__
+    __WIN32__
+    _WIN32
+    WIN32
+    _WINDOWS
+    NOMINMAX
+    _CRT_NONSTDC_NO_WARNINGS
+    _CRT_SECURE_NO_WARNINGS
+    _CRT_SECURE_NO_DEPRECATE
+    _SCL_SECURE_NO_WARNINGS
+    _HAS_EXCEPTIONS=0
+    _UNICODE
+    UNICODE
+]
+
+Defines JPEG_LIB_VERSION=62 ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION
+Defines QT_NO_EXCEPTIONS
+
+Defines [
+    GIT_REV=\"!(git rev-parse --short HEAD)\"
+    GIT_DATE=\"!(git log -1 --format=%cd --date=local)\"
+    GIT_HASH=\"!(git rev-parse HEAD)\"
+    GIT_TAG=\"\"
+]
+
+if x86   Defines _M_X86
+if arm64 Defines _M_ARM64
+
+# use .build file?
+# so i need a way to allow riftbuild to output these and only compile them when changed
+# because this is kind of ugly
+if windows PreBuild.Delete Generated
+if windows PreBuild.NewDirectory Generated/Translations
+if windows PreBuild.Cmd GenMetaData.bat
+if windows PreBuild.Cmd GenTranslations.bat
+
+IncludedSourceFiles [
+    AboutDialog.cpp
+    AutoUpdaterDialog.cpp
+    ColorPickerButton.cpp
+    CoverDownloadDialog.cpp
+    DisplayWidget.cpp
+    EarlyHardwareCheck.cpp
+    LogWindow.cpp
+    MainWindow.cpp
+    SetupWizardDialog.cpp
+    Themes.cpp
+    Translations.cpp
+    QtHost.cpp
+    QtKeyCodes.cpp
+    QtProgressCallback.cpp
+    QtUtils.cpp
+    GameList/GameListModel.cpp
+    GameList/GameListRefreshThread.cpp
+    GameList/GameListWidget.cpp
+    Settings/AchievementLoginDialog.cpp
+    Settings/AchievementSettingsWidget.cpp
+    Settings/AdvancedSettingsWidget.cpp
+    Settings/AudioSettingsWidget.cpp
+    Settings/BIOSSettingsWidget.cpp
+    Settings/ControllerBindingWidget.cpp
+    Settings/ControllerGlobalSettingsWidget.cpp
+    Settings/ControllerSettingsWindow.cpp
+    Settings/DebugSettingsWidget.cpp
+    Settings/EmulationSettingsWidget.cpp
+    Settings/FolderSettingsWidget.cpp
+    Settings/GameCheatSettingsWidget.cpp
+    Settings/GameFixSettingsWidget.cpp
+    Settings/GameListSettingsWidget.cpp
+    Settings/GamePatchSettingsWidget.cpp
+    Settings/GameSummaryWidget.cpp
+    Settings/GraphicsSettingsWidget.cpp
+    Settings/HotkeySettingsWidget.cpp
+    Settings/InputBindingDialog.cpp
+    Settings/InputBindingWidget.cpp
+    Settings/InterfaceSettingsWidget.cpp
+    Settings/MemoryCardConvertDialog.cpp
+    Settings/MemoryCardConvertWorker.cpp
+    Settings/MemoryCardCreateDialog.cpp
+    Settings/MemoryCardSettingsWidget.cpp
+    Settings/DEV9DnsHostDialog.cpp
+    Settings/DEV9SettingsWidget.cpp
+    Settings/DEV9UiCommon.cpp
+    Settings/HddCreateQt.cpp
+    Settings/SettingsWindow.cpp
+    Debugger/CpuWidget.cpp
+    Debugger/DebuggerSettingsManager.cpp
+    Debugger/DebuggerWindow.cpp
+    Debugger/DisassemblyWidget.cpp
+    Debugger/MemorySearchWidget.cpp
+    Debugger/MemoryViewWidget.cpp
+    Debugger/RegisterWidget.cpp
+    Debugger/BreakpointDialog.cpp
+    Debugger/Models/BreakpointModel.cpp
+    Debugger/Models/ThreadModel.cpp
+    Debugger/Models/StackModel.cpp
+    Debugger/Models/SavedAddressesModel.cpp
+    Debugger/SymbolTree/NewSymbolDialogs.cpp
+    Debugger/SymbolTree/SymbolTreeLocation.cpp
+    Debugger/SymbolTree/SymbolTreeModel.cpp
+    Debugger/SymbolTree/SymbolTreeNode.cpp
+    Debugger/SymbolTree/SymbolTreeDelegates.cpp
+    Debugger/SymbolTree/SymbolTreeWidgets.cpp
+    Debugger/SymbolTree/TypeString.cpp
+    Tools/InputRecording/NewInputRecordingDlg.cpp
+    Tools/InputRecording/InputRecordingViewer.cpp
+    Generated/moc_*.cpp
+    Generated/qrc_*.cpp
+]
+
+if windows IncludedSourceFiles VCRuntimeChecker.cpp
+
+Libraries [
+    pcsx2
+
+    GS-SSE4
+    GS-AVX
+    GS-AVX2
+
+    Qt6Core
+    Qt6Gui
+    Qt6Widgets
+    
+    common
+    imgui
+    fmt
+    rapidyaml
+    libchdr
+    libzip
+    cpuinfo
+    cubeb
+    rcheevos
+    discord-rpc
+    simpleini
+    freesurround
+    SDL2
+    ZLIB
+    LZ4
+    SoundTouch
+    PNG
+    LZMA
+    Zstd
+    demanglegnu
+    ccc
+    rainterface
+]
+
+# glad WinPixEventRuntime
+
+if windows Libraries [
+    #WIL
+    freetype
+    libjpeg
+    libpng16
+    zlibstatic
+    harfbuzz
+    libwebp
+    libsharpyuv
+    shaderc_shared
+    D3D12MemAlloc
+    setupapi.lib
+    ws2_32.lib
+    shlwapi.lib
+    iphlpapi.lib
+    dsound.lib
+    dxguid.lib
+    dinput8.lib
+    hid.lib
+    PowrProf.lib
+    d3dcompiler.lib
+    d3d11.lib
+    d3d12.lib
+    dxgi.lib
+    strmiids.lib
+    opengl32.lib
+    comsuppw.lib
+    dwmapi.lib
+    OneCore.lib
+]
+
+if !windows Libraries PCAP
+
+# would be nice to do this ../3rdparty/*/bin
+
+LibraryDirectories [
+    ../pcsx2/Build ../deps/lib ../3rdparty/lzma/bin
+    ../common/Build ../3rdparty/imgui/bin ../3rdparty/fmt/bin/Release
+    ../3rdparty/rapidyaml/bin ../3rdparty/libchdr/bin ../3rdparty/libzip/bin
+    ../3rdparty/cpuinfo/bin ../3rdparty/cubeb/bin ../3rdparty/rcheevos/bin
+    ../3rdparty/discord-rpc/bin ../3rdparty/simpleini/bin ../3rdparty/freesurround/bin
+    ../3rdparty/soundtouch/bin ../3rdparty/libpng/bin ../3rdparty/demangler/bin
+    ../3rdparty/ccc/bin ../3rdparty/d3d12memalloc/bin ../3rdparty/rainterface/bin
+]
+
+# this would be nice
+#PostBuild.Copy ../deps/bin/*.dll           $(BuildDirectory)/
+
+PostBuild.Copy ../deps/bin/Qt6Core.dll        $(BuildDirectory)/
+PostBuild.Copy ../deps/bin/Qt6Gui.dll         $(BuildDirectory)/
+PostBuild.Copy ../deps/bin/Qt6Widgets.dll     $(BuildDirectory)/
+PostBuild.Copy ../deps/bin/Qt6Network.dll     $(BuildDirectory)/
+PostBuild.Copy ../deps/bin/Qt6Svg.dll         $(BuildDirectory)/
+PostBuild.Copy ../deps/bin/lz4.dll            $(BuildDirectory)/
+PostBuild.Copy ../3rdparty/libpng/bin/png.dll $(BuildDirectory)/
+PostBuild.Copy ../deps/bin/libjpeg.dll        $(BuildDirectory)/
+PostBuild.Copy ../deps/bin/libwebp.dll        $(BuildDirectory)/
+PostBuild.Copy ../deps/bin/zstd.dll           $(BuildDirectory)/
+PostBuild.Copy ../deps/bin/harfbuzz.dll       $(BuildDirectory)/
+PostBuild.Copy ../deps/bin/libsharpyuv.dll    $(BuildDirectory)/
+PostBuild.Copy ../deps/bin/freetype.dll       $(BuildDirectory)/
+PostBuild.Copy ../deps/bin/SDL2.dll           $(BuildDirectory)/
+PostBuild.Copy ../deps/bin/libpng16.dll       $(BuildDirectory)/
+PostBuild.Copy ../deps/bin/zlib1.dll          $(BuildDirectory)/
+PostBuild.Copy ../deps/bin/shaderc_shared.dll $(BuildDirectory)/
+
+# need to support this natively
+PostBuild.NewDirectory $(BuildDirectory)/QtPlugins
+PostBuild.NewDirectory $(BuildDirectory)/translations
+#PostBuild.Copy ../deps/plugins/ $(BuildDirectory)/QtPlguins/
+if windows PostBuild.Cmd xcopy "..\deps\plugins\*" "$(BuildDirectory)\QtPlugins" /E /I /Y
+if windows PostBuild.Cmd xcopy "Generated\Translations\*" "$(BuildDirectory)\translations" /E /I /Y

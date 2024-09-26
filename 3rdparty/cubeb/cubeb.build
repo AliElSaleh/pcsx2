@@ -1,0 +1,27 @@
+Assembly %_FileName
+Type     static_lib
+
+if windows Compiler cl
+
+SourceDirectory        src
+BuildDirectory         bin
+IntermediateDirectory  int
+
+CompilerFlags          /EHsc
+Includes               include src ../../deps/include subprojects
+
+Defines [
+    OUTSIDE_SPEEX
+    FLOATING_POINT
+    EXPORT=
+    RANDOM_PREFIX=speex
+]
+
+IncludedSourceFiles [
+    cubeb.c
+    cubeb_mixer.cpp
+    cubeb_resampler.cpp
+    cubeb_log.cpp
+    cubeb_strings.c
+    cubeb_utils.cpp
+]

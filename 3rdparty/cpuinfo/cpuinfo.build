@@ -1,0 +1,99 @@
+Assembly %_FileName
+Type     static_lib
+
+if windows Compiler cl
+
+BuildDirectory         bin
+IntermediateDirectory  int
+
+Includes               include src ../../deps/include deps/clog/include
+Defines                CPUINFO_LOG_TO_STDIO=1
+
+if !loglevel           Defines CPUINFO_LOG_LEVEL=2
+if loglevel == default Defines CPUINFO_LOG_LEVEL=2
+if loglevel == debug   Defines CPUINFO_LOG_LEVEL=5
+if loglevel == info    Defines CPUINFO_LOG_LEVEL=4
+if loglevel == warning Defines CPUINFO_LOG_LEVEL=3
+if loglevel == error   Defines CPUINFO_LOG_LEVEL=2
+if loglevel == fatal   Defines CPUINFO_LOG_LEVEL=1
+
+if windows Defines     _WIN32_WINNT=0x0601 _CRT_SECURE_NO_WARNINGS
+
+IncludedSourceFiles    src/api.c src/cache.c src/init.c src/log.c
+
+if x86 IncludedSourceFiles [
+    src/x86/init.c
+    src/x86/info.c
+    src/x86/vendor.c
+    src/x86/uarch.c
+    src/x86/name.c
+    src/x86/topology.c
+    src/x86/isa.c
+    src/x86/cache/init.c
+    src/x86/cache/descriptor.c
+    src/x86/cache/deterministic.c
+]
+
+if linux IncludedSourceFiles [
+    src/linux/smallfile.c
+    src/linux/multiline.c
+    src/linux/cpulist.c
+    src/linux/processors.c
+]
+
+if mac IncludedSourceFiles [
+    src/mach/topology.c
+]
+
+if freebsd IncludedSourceFiles [
+    src/freebsd/topology.c
+]
+
+if x86 if linux IncludedSourceFiles [
+    src/x86/linux/init.c
+    src/x86/linux/cpuinfo.c
+]
+
+if x86 if mac IncludedSourceFiles [
+    src/x86/mach/init.c
+]
+
+if x86 if windows IncludedSourceFiles [
+    src/x86/windows/init.c
+]
+
+if x86 if freebsd IncludedSourceFiles [
+    src/x86/freebsd/init.c
+]
+
+if arm if windows IncludedSourceFiles [
+    src/arm/windows/init.c
+    src/arm/windows/init-by-logical-sys-info.c
+]
+
+if arm if !windows IncludedSourceFiles [
+    src/arm/uarch.c
+    src/arm/cache.c
+]
+
+if arm if linux IncludedSourceFiles [
+    src/arm/linux/init.c
+    src/arm/linux/cpuinfo.c
+    src/arm/linux/clusters.c
+    src/arm/linux/chipset.c
+    src/arm/linux/midr.c
+    src/arm/linux/hwcap.c
+]
+
+# todo: verify this works
+if !arm64 if armv5|armv6|armv7|armv8 if linux IncludedSourceFiles [
+    src/arm/linux/aarch32-isa.c
+]
+
+if arm64 if linux IncludedSourceFiles [
+    src/arm/linux/aarch64-isa.c
+]
+
+if arm64 if mac IncludedSourceFiles [
+    src/arm/mach/init.c
+]

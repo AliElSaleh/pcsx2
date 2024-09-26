@@ -1,0 +1,160 @@
+Assembly Common
+Type     static_lib
+
+if windows Compiler cl
+if windows Assembler ml64
+
+Depends fmt ../3rdparty/fmt
+
+CompilerFlags /std:c++20
+
+Includes [
+    .
+    ..
+    ../3rdparty/include
+    ../3rdparty/jpgd
+    ../3rdparty/fmt/include
+    ../3rdparty/fast_float/include
+    ../3rdparty/libjpeg-turbo
+    ../3rdparty/libjpeg-turbo/gen
+    ../3rdparty/libpng
+    ../3rdparty/libwebp/src
+]
+
+IncludedSourceFiles [
+    AlignedMalloc.cpp
+    Assertions.cpp
+    Console.cpp
+    CrashHandler.cpp
+    DynamicLibrary.cpp
+    Error.cpp
+    FileSystem.cpp
+    HostSys.cpp
+    Image.cpp
+    HTTPDownloader.cpp
+    MemorySettingsInterface.cpp
+    MD5Digest.cpp
+    PrecompiledHeader.cpp
+    Perf.cpp
+    ProgressCallback.cpp
+    ReadbackSpinManager.cpp
+    Semaphore.cpp
+    SettingsWrapper.cpp
+    SmallString.cpp
+    StringUtil.cpp
+    TextureDecompress.cpp
+    Timer.cpp
+    WAVWriter.cpp
+    WindowInfo.cpp
+]
+
+if windows  IncludedSourceFiles FastJmp.asm
+if !windows IncludedSourceFiles FastJmp.cpp
+
+if x86 IncludedSourceFiles [
+    emitter/avx.cpp
+    emitter/bmi.cpp
+    emitter/fpu.cpp
+    emitter/groups.cpp
+    emitter/jmp.cpp
+    emitter/legacy.cpp
+    emitter/legacy_sse.cpp
+    emitter/movs.cpp
+    emitter/simd.cpp
+    emitter/x86emitter.cpp
+]
+
+if windows IncludedSourceFiles [
+    #FastJmp.asm
+    HTTPDownloaderWinHTTP.cpp
+    HTTPDownloaderWinHTTP.h
+    StackWalker.cpp
+    StackWalker.h
+    Windows/WinThreads.cpp
+    Windows/WinHostSys.cpp
+    Windows/WinMisc.cpp
+]
+
+if apple IncludedSourceFiles [
+    CocoaTools.mm
+    CocoaTools.h
+    Darwin/DarwinThreads.cpp
+    Darwin/DarwinMisc.cpp
+    Darwin/DarwinMisc.h
+]
+
+if linux IncludedSourceFiles [
+    Linux/LnxHostSys.cpp
+    Linux/LnxThreads.cpp
+    Linux/LnxMisc.cpp
+]
+
+if !windows IncludedSourceFiles [
+    HTTPDownloaderCurl.cpp
+]
+
+if apple   CompilerFlags -fobjc-arc
+if apple   LinkerFlags   -fobjc-link-runtime -framework Foundation -framework IOKit
+
+if linux    Libraries X11 Xrandr
+if !windows Libraries curl
+
+#Libraries          fmt jpeg pngS webp
+#LibraryDirectories ../3rdparty/fmt/Build/Release ../3rdparty/libjpeg-turbo/bin/jpeg ../3rdparty/libpng/bin
+
+Defines JPEG_LIB_VERSION=62 # todo: something better
+Defines [
+    GIT_REV=\"!(git rev-parse --short HEAD)\"
+    GIT_DATE=\"!(git log -1 --format=%cd --date=local)\"
+    GIT_HASH=\"!(git rev-parse HEAD)\"
+]
+
+# TODO: look over these
+if windows Defines [
+    #NDEBUG
+    _SECURE_SCL_=0
+    _M_X86
+    __SSE4_1__
+    __WIN32__
+    WIN32
+    _WINDOWS
+    WIN32_LEAN_AND_MEAN
+    NOMINMAX
+    _CRT_NONSTDC_NO_WARNINGS
+    _CRT_SECURE_NO_WARNINGS
+    _CRT_SECURE_NO_DEPRECATE
+    _SCL_SECURE_NO_WARNINGS
+    _HAS_EXCEPTIONS=0
+    WINVER=0x0A00
+    _WIN32_WINNT=0x0A00
+    _UNICODE
+    UNICODE
+]
+
+AssertCompiler     clang clang++ cl
+AssertPlatform     Windows Mac Linux
+AssertArchitecture x64
+
+if mac Arch.arm|arm64.ErrorMessage {
+    *************** UNSUPPORTED CONFIGURATION ***************
+
+    Apple Silicon support in PCSX2 is INCOMPLETE. There are
+    currently no EE/VU/IOP recompilers, and games will run
+    VERY slow. There is no date for completion yet,
+    unless you want to work on the recompilers.
+
+    We also ask that you read https://dont-ship.it/.
+    
+    *********************************************************
+}
+
+Compiler.*.ErrorMessage {
+    *************** UNSUPPORTED CONFIGURATION ***************
+    
+    You are not compiling PCSX2 with a supported compiler.
+    It may not even build successfully.
+    PCSX2 only supports the Clang and MSVC compilers.
+    No support will be provided, continue at your own risk.
+
+    *********************************************************
+}

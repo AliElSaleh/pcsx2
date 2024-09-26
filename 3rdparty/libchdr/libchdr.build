@@ -1,0 +1,10 @@
+Assembly %_FileName
+Type     static_lib
+
+if windows Compiler cl
+
+SourceDirectory       src
+BuildDirectory        bin
+IntermediateDirectory int
+
+Includes              include ../../deps/include ../lzma/include

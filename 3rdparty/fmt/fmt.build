@@ -1,0 +1,35 @@
+Assembly fmt
+if shared  Type       dynamic_lib else Type     static_lib
+if windows Compiler   cl          else Compiler clang++
+
+SourceDirectory       src
+ExcludedSourceFiles   fmt.cc
+IntermediateDirectory int
+
+Includes              include
+
+if shared             Defines FMT_SHARED FMT_LIB_EXPORT else Defines FMT_STATIC
+if windows            Defines _WIN32
+
+if debug              BuildDirectory bin/Debug
+if !debug             BuildDirectory bin/Release
+
+if debug              CompilerFlags $DebugFlags
+if !debug             CompilerFlags $ReleaseFlags
+
+PedanticFlags
+if compiler == clang++ {
+    if pedantic       PedanticFlags -Wall -Wextra -pedantic -Wconversion -Wundef -Wdeprecated -Wweak-vtables -Wshadow -Wno-gnu-zero-variadic-macro-arguments
+
+    DebugFlags        -std=c++20 -O0 $PedanticFlags
+    ReleaseFlags      -std=c++20 -O3 $PedanticFlags
+}
+
+if compiler == cl {
+    DebugFlags        /std:c++20 /Od /EHa /Z7 $PedanticFlags
+    ReleaseFlags      /std:c++20 /O2 /EHa $PedanticFlags
+
+    if debug          LinkerFlags /DEBUG
+    if debug          Defines     _DEBUG
+    if !debug         Defines     NDEBUG
+}

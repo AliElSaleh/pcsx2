@@ -1,0 +1,12 @@
+Assembly demanglegnu
+Type     static_lib
+
+if windows Compiler cl
+
+SourceDirectory        src
+BuildDirectory         bin
+IntermediateDirectory  int
+
+CompilerFlags          /EHsc
+Includes               include src
+Defines                HAVE_DECL_BASENAME=1 HAVE_LIMITS_H=1 HAVE_STDLIB_H=1 HAVE_STRING_H=1
