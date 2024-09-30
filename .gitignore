@@ -71,7 +71,6 @@ oprofile_data/
 /bin/**/*.lib
 /bin/**/*.pdb
 /bin/pcsx2*
-/bin/qt.conf
 /bin/bios
 /bin/cache
 /bin/cheats
