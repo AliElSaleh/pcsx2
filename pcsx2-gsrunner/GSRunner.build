@@ -1,0 +1,143 @@
+Assembly pcsx2-gsrunner
+Type     app
+
+AssertWorkingDirectory .
+
+BuildDirectory ../bin
+
+Depends pcsx2         ../pcsx2
+Depends lzma          ../3rdparty/lzma
+Depends imgui         ../3rdparty/imgui
+Depends rapidyaml     ../3rdparty/rapidyaml
+Depends libchdr       ../3rdparty/libchdr
+Depends libzip        ../3rdparty/libzip
+Depends libpng        ../3rdparty/libpng
+Depends cpuinfo       ../3rdparty/cpuinfo
+Depends cubeb         ../3rdparty/cubeb
+Depends rcheevos      ../3rdparty/rcheevos
+Depends discord-rpc   ../3rdparty/discord-rpc
+Depends simpleini     ../3rdparty/simpleini
+Depends freesurround  ../3rdparty/freesurround
+Depends soundtouch    ../3rdparty/soundtouch
+Depends demangler     ../3rdparty/demangler
+Depends ccc           ../3rdparty/ccc
+Depends d3d12memalloc ../3rdparty/d3d12memalloc
+Depends rainterface   ../3rdparty/rainterface
+
+if windows Compiler cl
+if windows CompilerFlags /std:c++20 /arch:AVX2 /Zc:preprocessor /fp:contract /GS- /EHsc
+
+Defines [
+    GIT_REV=\"!(git rev-parse --short HEAD)\"
+    GIT_DATE=\"!(git log -1 --format=%cd --date=local)\"
+    GIT_HASH=\"!(git rev-parse HEAD)\"
+    GIT_TAG=\"\"
+]
+
+Includes [
+    .
+    ..
+    ../common/include
+    ../pcsx2
+    ../3rdparty/include
+    ../3rdparty/imgui/include
+    ../3rdparty/svnrev
+    ../3rdparty/fmt/include
+    ../3rdparty/fast_float/include
+    ../3rdparty/simpleini/include
+    ../3rdparty/lzma/include
+    ../3rdparty/winwil/include
+]
+
+LibraryDirectories [
+    ../pcsx2/Build ../deps/lib ../3rdparty/lzma/bin
+    ../common/Build ../3rdparty/imgui/bin ../3rdparty/fmt/bin/Release
+    ../3rdparty/rapidyaml/bin ../3rdparty/libchdr/bin ../3rdparty/libzip/bin
+    ../3rdparty/cpuinfo/bin ../3rdparty/cubeb/bin ../3rdparty/rcheevos/bin
+    ../3rdparty/discord-rpc/bin ../3rdparty/simpleini/bin ../3rdparty/freesurround/bin
+    ../3rdparty/soundtouch/bin ../3rdparty/libpng/bin ../3rdparty/demangler/bin
+    ../3rdparty/ccc/bin ../3rdparty/d3d12memalloc/bin ../3rdparty/rainterface/bin
+]
+
+if !enable_advanced_simd Libraries [
+    GS-SSE4
+    GS-AVX
+    GS-AVX2
+]
+
+Libraries [
+    pcsx2
+    
+    common
+    imgui
+    fmt
+    rapidyaml
+    libchdr
+    libzip
+    cpuinfo
+    cubeb
+    rcheevos
+    discord-rpc
+    simpleini
+    freesurround
+    SDL2
+    ZLIB
+    LZ4
+    SoundTouch
+    PNG
+    LZMA
+    Zstd
+    demanglegnu
+    ccc
+    rainterface
+]
+
+if windows Libraries [
+    freetype
+    libjpeg
+    libpng16
+    zlibstatic
+    libwebp
+    libsharpyuv
+    shaderc_shared
+    D3D12MemAlloc
+    setupapi
+    ws2_32
+    shlwapi
+    iphlpapi
+    dsound
+    dxguid
+    dinput8
+    hid
+    PowrProf
+    d3dcompiler
+    d3d11
+    d3d12
+    dxgi
+    strmiids
+    opengl32
+    comsuppw
+    dwmapi
+    OneCore
+]
+
+if windows Defines [
+    #NDEBUG
+    _SECURE_SCL_=0
+    _M_X86
+    __SSE4_1__
+    __WIN32__
+    WIN32
+    _WINDOWS
+    WIN32_LEAN_AND_MEAN
+    NOMINMAX
+    _CRT_NONSTDC_NO_WARNINGS
+    _CRT_SECURE_NO_WARNINGS
+    _CRT_SECURE_NO_DEPRECATE
+    _SCL_SECURE_NO_WARNINGS
+    _HAS_EXCEPTIONS=0
+    WINVER=0x0A00
+    _WIN32_WINNT=0x0A00
+    _UNICODE
+    UNICODE
+]
