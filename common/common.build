@@ -20,7 +20,7 @@ if !../deps/ if windows {
     # i'll be hosting the dependencies on my own github repo, until they smarten up and simplify things
 
     # TODO: once PreDepend is implement, update this...
-    #PreDepend.Log pcsx2 Windows Dependencies not found. Acquiring latest binaries... (this may take a few minutes to download)
+    PreDepend.Log pcsx2 Windows Dependencies not found. Acquiring latest binaries... (this may take a few minutes to download)
     PreDepend.Cmd powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/AliElSaleh/pcxs2-windows-dependencies/releases/download/v1.0.0/pcsx2-windows-dependencies.zip', '..\pcsx2-windows-dependencies.zip')"
     PreDepend.Cmd powershell -Command "Expand-Archive -Path "..\pcsx2-windows-dependencies.zip" -DestinationPath "../deps""
     #PreDepend.Download https://github.com/AliElSaleh/pcxs2-windows-dependencies/releases/download/v1.0.0/pcsx2-windows-dependencies.zip ../
