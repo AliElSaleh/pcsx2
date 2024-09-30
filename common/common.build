@@ -8,17 +8,37 @@ if windows Assembler ml64
 
 Depends fmt ../3rdparty/fmt
 
+if !../deps/ if windows {
+    
+    # this would've been so nice to have but unfortunately the pcsx2 dev team are so retarded that
+    # they zip the dependencies in a format that windows does not recognize natively, therefore 
+    # the user would have to go and download third-party software just to extract the contents of 
+    # the damn thing, where we could just do that easily without 7-Zip
+    # i just hate how complicated they make their life for no reason at all.
+       #PreBuild.Download https://github.com/PCSX2/pcsx2-windows-dependencies/releases/download/latest-windows-dependencies/pcsx2-windows-dependencies.7z ../
+
+    # i'll be hosting the dependencies on my own github repo, until they smarten up and simplify things
+
+    # TODO: once PreDepend is implement, update this...
+    #PreDepend.Log pcsx2 Windows Dependencies not found. Acquiring latest binaries... (this may take a few minutes to download)
+    PreDepend.Cmd powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/AliElSaleh/pcxs2-windows-dependencies/releases/download/v1.0.0/pcsx2-windows-dependencies.zip', '..\pcsx2-windows-dependencies.zip')"
+    PreDepend.Cmd powershell -Command "Expand-Archive -Path "..\pcsx2-windows-dependencies.zip" -DestinationPath "../deps""
+    #PreDepend.Download https://github.com/AliElSaleh/pcxs2-windows-dependencies/releases/download/v1.0.0/pcsx2-windows-dependencies.zip ../
+    #PreDepend.Unzip ../pcsx2-windows-dependencies.zip ../deps
+    #PreDepend.Delete ../pcsx2-windows-dependencies.zip
+    PreDepend.Delete ../pcsx2-windows-dependencies.zip
+}
+
 CompilerFlags /std:c++20
 
 Includes [
     .
     ..
+    ../deps/include
     ../3rdparty/include
     ../3rdparty/jpgd
     ../3rdparty/fmt/include
     ../3rdparty/fast_float/include
-    ../3rdparty/libjpeg-turbo
-    ../3rdparty/libjpeg-turbo/gen
     ../3rdparty/libpng
     ../3rdparty/libwebp/src
 ]
