@@ -11,7 +11,6 @@ Depends imgui         ../3rdparty/imgui
 Depends rapidyaml     ../3rdparty/rapidyaml
 Depends libchdr       ../3rdparty/libchdr
 Depends libzip        ../3rdparty/libzip
-Depends libpng        ../3rdparty/libpng
 Depends cpuinfo       ../3rdparty/cpuinfo
 Depends cubeb         ../3rdparty/cubeb
 Depends rcheevos      ../3rdparty/rcheevos
@@ -27,16 +26,10 @@ Depends rainterface   ../3rdparty/rainterface
 if windows Compiler cl
 if windows CompilerFlags /std:c++20 /arch:AVX2 /Zc:preprocessor /fp:contract /GS- /EHsc
 
-Defines [
-    GIT_REV=\"!(git rev-parse --short HEAD)\"
-    GIT_DATE=\"!(git log -1 --format=%cd --date=local)\"
-    GIT_HASH=\"!(git rev-parse HEAD)\"
-    GIT_TAG=\"\"
-]
-
 Includes [
     .
     ..
+    ../common
     ../common/include
     ../pcsx2
     ../3rdparty/include
@@ -55,7 +48,7 @@ LibraryDirectories [
     ../3rdparty/rapidyaml/bin ../3rdparty/libchdr/bin ../3rdparty/libzip/bin
     ../3rdparty/cpuinfo/bin ../3rdparty/cubeb/bin ../3rdparty/rcheevos/bin
     ../3rdparty/discord-rpc/bin ../3rdparty/simpleini/bin ../3rdparty/freesurround/bin
-    ../3rdparty/soundtouch/bin ../3rdparty/libpng/bin ../3rdparty/demangler/bin
+    ../3rdparty/soundtouch/bin ../3rdparty/demangler/bin
     ../3rdparty/ccc/bin ../3rdparty/d3d12memalloc/bin ../3rdparty/rainterface/bin
 ]
 
@@ -84,7 +77,7 @@ Libraries [
     ZLIB
     LZ4
     SoundTouch
-    PNG
+    libpng16
     LZMA
     Zstd
     demanglegnu

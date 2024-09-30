@@ -8,6 +8,8 @@ if windows Assembler ml64
 
 Depends fmt ../3rdparty/fmt
 
+PreBuild.Cmd call vsprops/preBuild.cmd
+
 if !../deps/ if windows {
     
     # this would've been so nice to have but unfortunately the pcsx2 dev team are so retarded that
@@ -125,11 +127,6 @@ if !windows Libraries curl
 #LibraryDirectories ../3rdparty/fmt/Build/Release ../3rdparty/libjpeg-turbo/bin/jpeg ../3rdparty/libpng/bin
 
 Defines JPEG_LIB_VERSION=62 # todo: something better
-Defines [
-    GIT_REV=\"!(git rev-parse --short HEAD)\"
-    GIT_DATE=\"!(git log -1 --format=%cd --date=local)\"
-    GIT_HASH=\"!(git rev-parse HEAD)\"
-]
 
 # TODO: look over these
 if windows Defines [

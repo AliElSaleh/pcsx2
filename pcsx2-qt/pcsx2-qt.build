@@ -17,7 +17,6 @@ Depends imgui         ../3rdparty/imgui
 Depends rapidyaml     ../3rdparty/rapidyaml
 Depends libchdr       ../3rdparty/libchdr
 Depends libzip        ../3rdparty/libzip
-Depends libpng        ../3rdparty/libpng
 Depends cpuinfo       ../3rdparty/cpuinfo
 Depends cubeb         ../3rdparty/cubeb
 Depends rcheevos      ../3rdparty/rcheevos
@@ -91,13 +90,6 @@ if windows Defines [
 
 Defines JPEG_LIB_VERSION=62 ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION
 Defines QT_NO_EXCEPTIONS
-
-Defines [
-    GIT_REV=\"!(git rev-parse --short HEAD)\"
-    GIT_DATE=\"!(git log -1 --format=%cd --date=local)\"
-    GIT_HASH=\"!(git rev-parse HEAD)\"
-    GIT_TAG=\"\"
-]
 
 if x86   Defines _M_X86
 if arm64 Defines _M_ARM64
@@ -211,7 +203,7 @@ Libraries [
     ZLIB
     LZ4
     SoundTouch
-    PNG
+    libpng16
     LZMA
     Zstd
     demanglegnu
@@ -268,7 +260,7 @@ LibraryDirectories [
     ../3rdparty/rapidyaml/bin ../3rdparty/libchdr/bin ../3rdparty/libzip/bin
     ../3rdparty/cpuinfo/bin ../3rdparty/cubeb/bin ../3rdparty/rcheevos/bin
     ../3rdparty/discord-rpc/bin ../3rdparty/simpleini/bin ../3rdparty/freesurround/bin
-    ../3rdparty/soundtouch/bin ../3rdparty/libpng/bin ../3rdparty/demangler/bin
+    ../3rdparty/soundtouch/bin ../3rdparty/demangler/bin
     ../3rdparty/ccc/bin ../3rdparty/d3d12memalloc/bin ../3rdparty/rainterface/bin
 ]
 
@@ -281,7 +273,6 @@ PostBuild.Copy ../deps/bin/Qt6Widgets.dll     $(BuildDirectory)/
 PostBuild.Copy ../deps/bin/Qt6Network.dll     $(BuildDirectory)/
 PostBuild.Copy ../deps/bin/Qt6Svg.dll         $(BuildDirectory)/
 PostBuild.Copy ../deps/bin/lz4.dll            $(BuildDirectory)/
-PostBuild.Copy ../3rdparty/libpng/bin/png.dll $(BuildDirectory)/
 PostBuild.Copy ../deps/bin/libjpeg.dll        $(BuildDirectory)/
 PostBuild.Copy ../deps/bin/libwebp.dll        $(BuildDirectory)/
 PostBuild.Copy ../deps/bin/zstd.dll           $(BuildDirectory)/
