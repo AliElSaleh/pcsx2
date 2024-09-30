@@ -1,6 +1,8 @@
 Assembly Common
 Type     static_lib
 
+AssertWorkingDirectory .
+
 if windows Compiler cl
 if windows Assembler ml64
 

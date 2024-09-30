@@ -2,6 +2,8 @@ Assembly %_FileName
 Type     app
 RunAssembly
 
+AssertWorkingDirectory .
+
 BuildDirectory ../bin
 
 if windows Icon ../pcsx2/windows/AppIcon.ico
@@ -9,7 +11,7 @@ if windows Icon ../pcsx2/windows/AppIcon.ico
 if windows Compiler cl
 if windows Assembler ml64
 
-Depends pcsx2         ../pcsx2 | no_simd
+Depends pcsx2         ../pcsx2
 Depends lzma          ../3rdparty/lzma
 Depends imgui         ../3rdparty/imgui
 Depends rapidyaml     ../3rdparty/rapidyaml
@@ -27,27 +29,6 @@ Depends demangler     ../3rdparty/demangler
 Depends ccc           ../3rdparty/ccc
 Depends d3d12memalloc ../3rdparty/d3d12memalloc
 Depends rainterface   ../3rdparty/rainterface
-
-if !../deps/ if windows {
-    
-    # this would've been so nice to have but unfortunately the pcsx2 dev team are so retarded that
-    # they zip the dependencies in a format that windows does not recognize natively, therefore 
-    # the user would have to go and download third-party software just to extract the contents of 
-    # the damn thing, where we could just do that easily without 7-Zip
-    # i just hate how complicated they make their life for no reason at all.
-       #PreBuild.Download https://github.com/PCSX2/pcsx2-windows-dependencies/releases/download/latest-windows-dependencies/pcsx2-windows-dependencies.7z ../
-
-    # i'll be hosting the dependencies on my own github repo, until they smarten up and simplify things
-
-    # TODO: once PreDepend is implement, update this...
-    #PreDepend.Log pcsx2 Windows Dependencies not found. Acquiring latest binaries... (this may take a few minutes to download)
-    PreBuild.Cmd powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/AliElSaleh/pcxs2-windows-dependencies/releases/download/v1.0.0/pcsx2-windows-dependencies.zip', '..\pcsx2-windows-dependencies.zip')"
-    PreBuild.Cmd powershell -Command "Expand-Archive -Path "..\pcsx2-windows-dependencies.zip" -DestinationPath "../deps""
-    #PreDepend.Download https://github.com/AliElSaleh/pcxs2-windows-dependencies/releases/download/v1.0.0/pcsx2-windows-dependencies.zip ../
-    #PreDepend.Unzip ../pcsx2-windows-dependencies.zip
-    #PreDepend.Delete ../pcsx2-windows-dependencies.zip
-    PreBuild.Delete ../pcsx2-windows-dependencies.zip
-}
 
 CompilerFlags /std:c++20 /arch:AVX2 /fp:contract /GS- /EHsc /Zc:__cplusplus
 
@@ -124,10 +105,12 @@ if arm64 Defines _M_ARM64
 # use .build file?
 # so i need a way to allow riftbuild to output these and only compile them when changed
 # because this is kind of ugly
-if windows PreBuild.Delete Generated
-if windows PreBuild.NewDirectory Generated/Translations
-if windows PreBuild.Cmd GenMetaData.bat
-if windows PreBuild.Cmd GenTranslations.bat
+if gen|!Generated/ {
+    PreBuild.Delete Generated/
+    PreBuild.NewDirectory Generated/Translations
+    if windows PreBuild.Cmd GenMetaData.bat
+    if windows PreBuild.Cmd GenTranslations.bat
+}
 
 IncludedSourceFiles [
     AboutDialog.cpp
@@ -208,10 +191,6 @@ if windows IncludedSourceFiles VCRuntimeChecker.cpp
 Libraries [
     pcsx2
 
-    GS-SSE4
-    GS-AVX
-    GS-AVX2
-
     Qt6Core
     Qt6Gui
     Qt6Widgets
@@ -240,6 +219,12 @@ Libraries [
     rainterface
 ]
 
+if !enable_advanced_simd Libraries [
+    GS-SSE4
+    GS-AVX
+    GS-AVX2
+]
+
 # glad WinPixEventRuntime
 
 if windows Libraries [
@@ -253,24 +238,24 @@ if windows Libraries [
     libsharpyuv
     shaderc_shared
     D3D12MemAlloc
-    setupapi.lib
-    ws2_32.lib
-    shlwapi.lib
-    iphlpapi.lib
-    dsound.lib
-    dxguid.lib
-    dinput8.lib
-    hid.lib
-    PowrProf.lib
-    d3dcompiler.lib
-    d3d11.lib
-    d3d12.lib
-    dxgi.lib
-    strmiids.lib
-    opengl32.lib
-    comsuppw.lib
-    dwmapi.lib
-    OneCore.lib
+    setupapi
+    ws2_32
+    shlwapi
+    iphlpapi
+    dsound
+    dxguid
+    dinput8
+    hid
+    PowrProf
+    d3dcompiler
+    d3d11
+    d3d12
+    dxgi
+    strmiids
+    opengl32
+    comsuppw
+    dwmapi
+    OneCore
 ]
 
 if !windows Libraries PCAP

@@ -1,12 +1,35 @@
 Assembly pcsx2
 Type     static_lib
 
+AssertWorkingDirectory .
+
 if windows Compiler cl
 if windows Assembler ml64
 
 Depends common ../common/
 
-if no_simd {
+if !../deps/ if windows {
+    
+    # this would've been so nice to have but unfortunately the pcsx2 dev team are so retarded that
+    # they zip the dependencies in a format that windows does not recognize natively, therefore 
+    # the user would have to go and download third-party software just to extract the contents of 
+    # the damn thing, where we could just do that easily without 7-Zip
+    # i just hate how complicated they make their life for no reason at all.
+       #PreBuild.Download https://github.com/PCSX2/pcsx2-windows-dependencies/releases/download/latest-windows-dependencies/pcsx2-windows-dependencies.7z ../
+
+    # i'll be hosting the dependencies on my own github repo, until they smarten up and simplify things
+
+    # TODO: once PreDepend is implement, update this...
+    #PreDepend.Log pcsx2 Windows Dependencies not found. Acquiring latest binaries... (this may take a few minutes to download)
+    PreBuild.Cmd powershell -Command "(New-Object Net.WebClient).DownloadFile('https://github.com/AliElSaleh/pcxs2-windows-dependencies/releases/download/v1.0.0/pcsx2-windows-dependencies.zip', '..\pcsx2-windows-dependencies.zip')"
+    PreBuild.Cmd powershell -Command "Expand-Archive -Path "..\pcsx2-windows-dependencies.zip" -DestinationPath "../deps""
+    #PreDepend.Download https://github.com/AliElSaleh/pcxs2-windows-dependencies/releases/download/v1.0.0/pcsx2-windows-dependencies.zip ../
+    #PreDepend.Unzip ../pcsx2-windows-dependencies.zip ../deps
+    #PreDepend.Delete ../pcsx2-windows-dependencies.zip
+    PreBuild.Delete ../pcsx2-windows-dependencies.zip
+}
+
+if !enable_advanced_simd {
     Depends GS | isa=sse4
     Depends GS | isa=avx
     Depends GS | isa=avx2
@@ -19,6 +42,8 @@ if pgo_optimize CompilerFlags -fprofile-use
 if pgo_generate|pgo_optimize CompilerFlags -fprofile-dir="profile"
 if asan LinkerFlags -faddress=sanitize ; Defines ASAN_WORKAROUND
 ##
+
+IntermediateDirectory Intermediate/pcsx2
 
 CompilerFlags /std:c++20 /arch:AVX2 /Zc:preprocessor /fp:contract /GS- /EHsc #-O3 -fno-lto
 
@@ -463,12 +488,11 @@ IPUSourcesUnshared [
     IPU/yuv2rgb.cpp
 ]
 
-if no_simd {
-    # TODO
+if !enable_advanced_simd {
     Defines MULTI_ISA_SHARED_COMPILATION
 }
 
-if !no_simd {
+if enable_advanced_simd {
     GSSources $GSSourcesUnshared
     IPUSources $IPUSourcesUnshared
     SPU2Sources $SPU2SourcesUnshared

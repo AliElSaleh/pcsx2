@@ -5,6 +5,8 @@ Type     static_lib
 
 if windows Compiler cl
 
+IntermediateDirectory Intermediate/$Assembly
+
 CompilerFlags /std:c++20 /fp:contract /GS- /EHsc /Zc:preprocessor
 
 if isa == avx CompilerFlags /arch:AVX
