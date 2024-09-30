@@ -1,0 +1,3 @@
+updater.build updater/
+gsrunner.build pcsx2-gsrunner/
+pcsx2-qt.build pcsx2-qt/
