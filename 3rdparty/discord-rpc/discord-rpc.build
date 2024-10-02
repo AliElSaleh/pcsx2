@@ -13,7 +13,6 @@ IncludedSourceFiles [
 	discord_rpc.cpp
 	rpc_connection.cpp
 	serialization.cpp
-	serialization.h
 ]
 
 if windows IncludedSourceFiles [

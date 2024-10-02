@@ -2,14 +2,11 @@ Assembly %_FileName
 Type     app
 RunAssembly
 
-AssertWorkingDirectory .
-
 BuildDirectory ../bin
-
-if windows Icon ../pcsx2/windows/AppIcon.ico
 
 if windows Compiler cl
 if windows Assembler ml64
+if windows Icon ../pcsx2/windows/AppIcon.ico
 
 Depends pcsx2         ../pcsx2
 Depends lzma          ../3rdparty/lzma
@@ -28,6 +25,11 @@ Depends demangler     ../3rdparty/demangler
 Depends ccc           ../3rdparty/ccc
 Depends d3d12memalloc ../3rdparty/d3d12memalloc
 Depends rainterface   ../3rdparty/rainterface
+
+Depends  QtMetaData | moc %%gen
+Depends  QtMetaData | uic %%gen
+Depends  QtMetaData | rcc %%gen
+Depends! QtMetaData | lrelease %%gen
 
 CompilerFlags /std:c++20 /arch:AVX2 /fp:contract /GS- /EHsc /Zc:__cplusplus
 
@@ -62,7 +64,7 @@ Includes [
     ../3rdparty/svnrev
     ../3rdparty/cpuinfo/include
     ../3rdparty/lzma/include
-    Generated
+    Generated/uic
 ]
 
 if windows Defines [
@@ -93,16 +95,6 @@ Defines QT_NO_EXCEPTIONS
 
 if x86   Defines _M_X86
 if arm64 Defines _M_ARM64
-
-# use .build file?
-# so i need a way to allow riftbuild to output these and only compile them when changed
-# because this is kind of ugly
-if gen|!Generated/ {
-    PreBuild.Delete Generated/
-    PreBuild.NewDirectory Generated/Translations
-    if windows PreBuild.Cmd GenMetaData.bat
-    if windows PreBuild.Cmd GenTranslations.bat
-}
 
 IncludedSourceFiles [
     AboutDialog.cpp
@@ -174,8 +166,8 @@ IncludedSourceFiles [
     Debugger/SymbolTree/TypeString.cpp
     Tools/InputRecording/NewInputRecordingDlg.cpp
     Tools/InputRecording/InputRecordingViewer.cpp
-    Generated/moc_*.cpp
-    Generated/qrc_*.cpp
+    Generated/moc/moc_*.cpp
+    Generated/rcc/qrc_*.cpp
 ]
 
 if windows IncludedSourceFiles VCRuntimeChecker.cpp
@@ -267,26 +259,37 @@ LibraryDirectories [
 # this would be nice
 #PostBuild.Copy ../deps/bin/*.dll           $(BuildDirectory)/
 
-PostBuild.Copy ../deps/bin/Qt6Core.dll        $(BuildDirectory)/
-PostBuild.Copy ../deps/bin/Qt6Gui.dll         $(BuildDirectory)/
-PostBuild.Copy ../deps/bin/Qt6Widgets.dll     $(BuildDirectory)/
-PostBuild.Copy ../deps/bin/Qt6Network.dll     $(BuildDirectory)/
-PostBuild.Copy ../deps/bin/Qt6Svg.dll         $(BuildDirectory)/
-PostBuild.Copy ../deps/bin/lz4.dll            $(BuildDirectory)/
-PostBuild.Copy ../deps/bin/libjpeg.dll        $(BuildDirectory)/
-PostBuild.Copy ../deps/bin/libwebp.dll        $(BuildDirectory)/
-PostBuild.Copy ../deps/bin/zstd.dll           $(BuildDirectory)/
-PostBuild.Copy ../deps/bin/harfbuzz.dll       $(BuildDirectory)/
-PostBuild.Copy ../deps/bin/libsharpyuv.dll    $(BuildDirectory)/
-PostBuild.Copy ../deps/bin/freetype.dll       $(BuildDirectory)/
-PostBuild.Copy ../deps/bin/SDL2.dll           $(BuildDirectory)/
-PostBuild.Copy ../deps/bin/libpng16.dll       $(BuildDirectory)/
-PostBuild.Copy ../deps/bin/zlib1.dll          $(BuildDirectory)/
-PostBuild.Copy ../deps/bin/shaderc_shared.dll $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/Qt6Core.dll        $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/Qt6Gui.dll         $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/Qt6Widgets.dll     $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/Qt6Network.dll     $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/Qt6Svg.dll         $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/lz4.dll            $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/libjpeg.dll        $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/libwebp.dll        $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/zstd.dll           $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/harfbuzz.dll       $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/libsharpyuv.dll    $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/freetype.dll       $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/SDL2.dll           $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/libpng16.dll       $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/zlib1.dll          $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/shaderc_shared.dll $(BuildDirectory)/
 
-# need to support this natively
-PostBuild.NewDirectory $(BuildDirectory)/QtPlugins
-PostBuild.NewDirectory $(BuildDirectory)/translations
-#PostBuild.Copy ../deps/plugins/ $(BuildDirectory)/QtPlguins/
-if windows PostBuild.Cmd xcopy "..\deps\plugins\*" "$(BuildDirectory)\QtPlugins" /E /I /Y
-if windows PostBuild.Cmd xcopy "Generated\Translations\*" "$(BuildDirectory)\translations" /E /I /Y
+# need to support this
+#if !$(BuildDirectory)/QtPlugins
+
+if !../bin/QtPlugins/ {
+    PostBuild.NewDirectory $(BuildDirectory)/QtPlugins
+    if windows PostBuild.Cmd xcopy "..\deps\plugins\*" "$(BuildDirectory)\QtPlugins" /E /I /Y
+    
+    # need to support this natively
+    #PostBuild.Copy ../deps/plugins/ $(BuildDirectory)/QtPlugins/
+}
+
+if !../bin/translations/ {
+    PostBuild.NewDirectory $(BuildDirectory)/translations
+    if windows PostBuild.Cmd xcopy "Generated\lrelease\*" "$(BuildDirectory)\translations" /E /I /Y
+}
+
+AssertWorkingDirectory .

@@ -41,9 +41,6 @@ Includes [
     ../3rdparty/ffmpeg/include
     ../3rdparty/glad/include
     ../3rdparty/fast_float/include
-    ../3rdparty/libjpeg-turbo
-    ../3rdparty/libjpeg-turbo/gen
-    ../3rdparty/libpng
     ../3rdparty/libwebp/src
     ../3rdparty/zlib
     ../3rdparty/ccc/src

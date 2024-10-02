@@ -1,0 +1,18 @@
+QtCompiler %%uic %%moc %%rcc %%lrelease
+Compiler ../deps/bin/$QtCompiler
+
+ExcludedSourceDirectories Generated
+IntermediateDirectory Generated/$(QtCompiler)/.
+
+if uic      Extension .h   ; IncludedSourceFiles *.ui  ; Assembly.Prefix ui_
+if moc      Extension .cpp ; IncludedSourceFiles *.h   ; Assembly.Prefix moc_
+if rcc      Extension .cpp ; IncludedSourceFiles *.qrc ; Assembly.Prefix qrc_
+if lrelease Extension .qm  ; IncludedSourceFiles *.ts
+
+if lrelease  CompilerOutputFlag -qm
+if !lrelease CompilerOutputFlag -o
+
+if gen AlwaysRebuild
+
+AssertWorkingDirectory .
+AssertArgExists.OnlyOne uic moc rcc lrelease
