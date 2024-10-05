@@ -3,8 +3,7 @@ Type     static_lib
 
 AssertWorkingDirectory .
 
-if windows Compiler cl
-if windows Assembler ml64
+include ../common.buildvars
 
 Depends common ../common/
 
@@ -14,17 +13,7 @@ if !enable_advanced_simd {
     Depends GS | isa=avx2
 }
 
-## todo
-WarningFlags -Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Wno-missing-field-initializers
-if pgo_generate CompilerFlags -fprofile-generate
-if pgo_optimize CompilerFlags -fprofile-use
-if pgo_generate|pgo_optimize CompilerFlags -fprofile-dir="profile"
-if asan LinkerFlags -faddress=sanitize ; Defines ASAN_WORKAROUND
-##
-
 IntermediateDirectory Intermediate/pcsx2
-
-CompilerFlags /std:c++20 /arch:AVX2 /Zc:preprocessor /fp:contract /GS- /EHsc #-O3 -fno-lto
 
 if mac LinkerFlags -Wl,-dead_strip,-dead_strip_dylibs
 
@@ -70,33 +59,8 @@ Includes [
 Defines C4_NO_DEBUG_BREAK
 
 if x86   Includes ../3rdparty/xbyak
-if x86   Defines _M_X86
-if arm64 Defines _M_ARM64
 
-if windows Defines [
-    WINVER=0x0A00
-    _WIN32_WINNT=0x0A00
-    WIN32_LEAN_AND_MEAN
-    WIL_SUPPRESS_EXCEPTIONS
-    
-    #NDEBUG
-    _SECURE_SCL_=0
-    __SSE4_1__
-    __WIN32__
-    WIN32
-    _WIN32
-    _WINDOWS
-    NOMINMAX
-    _CRT_NONSTDC_NO_WARNINGS
-    _CRT_SECURE_NO_WARNINGS
-    _CRT_SECURE_NO_DEPRECATE
-    _SCL_SECURE_NO_WARNINGS
-    _HAS_EXCEPTIONS=0
-    _UNICODE
-    UNICODE
-]
-
-Defines JPEG_LIB_VERSION=62 ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION
+Defines ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION
 
 # main pcsx2 source files
 PCSX2Sources [
@@ -649,6 +613,6 @@ if linux   IncludedSourceFiles $LinuxSources
 if apple   IncludedSourceFiles $OSXSources
 if freebsd IncludedSourceFiles $FreeBSDSourcesSources
 
-if apple   LinkerFlags         -framework QuartzCore -framework Metal
+if apple   LinkerFlags -framework QuartzCore -framework Metal
 
 AssertCPUExtension avx2

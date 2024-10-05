@@ -3,6 +3,8 @@ Type     app
 
 AssertWorkingDirectory .
 
+include ../common.buildvars
+
 BuildDirectory ../bin
 
 Depends pcsx2         ../pcsx2
@@ -22,9 +24,6 @@ Depends demangler     ../3rdparty/demangler
 Depends ccc           ../3rdparty/ccc
 Depends d3d12memalloc ../3rdparty/d3d12memalloc
 Depends rainterface   ../3rdparty/rainterface
-
-if windows Compiler cl
-if windows CompilerFlags /std:c++20 /arch:AVX2 /Zc:preprocessor /fp:contract /GS- /EHsc
 
 Includes [
     .
@@ -112,25 +111,4 @@ if windows Libraries [
     comsuppw
     dwmapi
     OneCore
-]
-
-if windows Defines [
-    #NDEBUG
-    _SECURE_SCL_=0
-    _M_X86
-    __SSE4_1__
-    __WIN32__
-    WIN32
-    _WINDOWS
-    WIN32_LEAN_AND_MEAN
-    NOMINMAX
-    _CRT_NONSTDC_NO_WARNINGS
-    _CRT_SECURE_NO_WARNINGS
-    _CRT_SECURE_NO_DEPRECATE
-    _SCL_SECURE_NO_WARNINGS
-    _HAS_EXCEPTIONS=0
-    WINVER=0x0A00
-    _WIN32_WINNT=0x0A00
-    _UNICODE
-    UNICODE
 ]

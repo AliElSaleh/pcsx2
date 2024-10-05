@@ -3,45 +3,17 @@ AssertArgExists isa
 Assembly %(_FileName)-%^(isa)
 Type     static_lib
 
-if windows Compiler cl
+include ../common.buildvars
 
 IntermediateDirectory Intermediate/$Assembly
 
-CompilerFlags /std:c++20 /fp:contract /GS- /EHsc /Zc:preprocessor
-
-if isa == avx CompilerFlags /arch:AVX
+if isa == avx  CompilerFlags /arch:AVX
 if isa == avx2 CompilerFlags /arch:AVX2
 
 Defines ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION MULTI_ISA_UNSHARED_COMPILATION=isa_%isa
 
 if isa == sse4 Defines MULTI_ISA_IS_FIRST=1
 if isa != sse4 Defines MULTI_ISA_IS_FIRST=0
-
-if windows Defines [
-    WINVER=0x0A00
-    _WIN32_WINNT=0x0A00
-    WIN32_LEAN_AND_MEAN
-    WIL_SUPPRESS_EXCEPTIONS
-    
-    #NDEBUG
-    _SECURE_SCL_=0
-    __SSE4_1__
-    __WIN32__
-    WIN32
-    _WIN32
-    _WINDOWS
-    NOMINMAX
-    _CRT_NONSTDC_NO_WARNINGS
-    _CRT_SECURE_NO_WARNINGS
-    _CRT_SECURE_NO_DEPRECATE
-    _SCL_SECURE_NO_WARNINGS
-    _HAS_EXCEPTIONS=0
-    _UNICODE
-    UNICODE
-]
-
-if x86   Defines _M_X86
-if arm64 Defines _M_ARM64
 
 Includes [
     .
@@ -53,7 +25,7 @@ Includes [
     ../3rdparty/fast_float/include
 ]
 
-if x86   Includes ../3rdparty/xbyak
+if x86 Includes ../3rdparty/xbyak
 
 GSSourcesUnshared [
     GS/GSBlock.cpp
