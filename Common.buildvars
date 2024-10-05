@@ -1,0 +1,37 @@
+
+if windows Compiler cl else Compiler clang++
+if windows Assembler ml64 else Assembler nasm
+
+if x86     Defines _M_X86
+if arm64   Defines _M_ARM64
+if _sse4.1 Defines __SSE4_1__
+
+if windows Defines [
+    WINVER=0x0A00
+    _WIN32_WINNT=0x0A00
+    WIN32_LEAN_AND_MEAN
+    WIL_SUPPRESS_EXCEPTIONS
+    _SECURE_SCL_=0
+    __WIN32__
+    _WIN32
+    WIN32
+    _WINDOWS
+    NOMINMAX
+    _CRT_NONSTDC_NO_WARNINGS
+    _CRT_SECURE_NO_WARNINGS
+    _CRT_SECURE_NO_DEPRECATE
+    _SCL_SECURE_NO_WARNINGS
+    _HAS_EXCEPTIONS=0
+    _UNICODE
+    UNICODE
+]
+
+CompilerFlags /std:c++20 /fp:contract /GS- /EHsc /Zc:__cplusplus /Zc:preprocessor
+
+## todo
+WarningFlags -Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Wno-missing-field-initializers
+if pgo_generate CompilerFlags -fprofile-generate
+if pgo_optimize CompilerFlags -fprofile-use
+if pgo_generate|pgo_optimize CompilerFlags -fprofile-dir="profile"
+if asan LinkerFlags -faddress=sanitize ; Defines ASAN_WORKAROUND
+##
