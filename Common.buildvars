@@ -26,7 +26,7 @@ if windows Defines [
     UNICODE
 ]
 
-CompilerFlags /std:c++20 /fp:contract /GS- /EHsc /Zc:__cplusplus /Zc:preprocessor
+CompilerFlags /std:c++20 /fp:contract /GS- /EHsc /Zc:__cplusplus /Zc:preprocessor /wd5105
 
 ## todo
 WarningFlags -Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Wno-missing-field-initializers

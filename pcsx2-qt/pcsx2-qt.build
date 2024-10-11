@@ -261,7 +261,7 @@ if !../bin/QtPlugins/ {
 
 if !../bin/translations/ {
     PostBuild.NewDirectory $(BuildDirectory)/translations
-    if windows PostBuild.Cmd xcopy "Generated\lrelease\*" "$(BuildDirectory)\translations" /E /I /Y
+    if windows PostBuild.Cmd xcopy "Generated\lrelease\*.qm" "$(BuildDirectory)\translations" /E /I /Y
 }
 
 AssertWorkingDirectory .
