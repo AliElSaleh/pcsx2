@@ -1,7 +1,7 @@
 Assembly pcsx2-gsrunner
 Type     app
 
-AssertWorkingDirectory .
+Assert.WorkingDirectory .
 
 include ../common.buildvars
 
@@ -25,7 +25,8 @@ Depends ccc           ../3rdparty/ccc
 Depends d3d12memalloc ../3rdparty/d3d12memalloc
 Depends rainterface   ../3rdparty/rainterface
 
-Includes [
+Includes
+[
     .
     ..
     ../common
@@ -41,7 +42,8 @@ Includes [
     ../3rdparty/winwil/include
 ]
 
-LibraryDirectories [
+LibraryDirectories
+[
     ../pcsx2/Build ../deps/lib ../3rdparty/lzma/bin
     ../common/Build ../3rdparty/imgui/bin ../3rdparty/fmt/bin/Release
     ../3rdparty/rapidyaml/bin ../3rdparty/libchdr/bin ../3rdparty/libzip/bin
@@ -51,13 +53,15 @@ LibraryDirectories [
     ../3rdparty/ccc/bin ../3rdparty/d3d12memalloc/bin ../3rdparty/rainterface/bin
 ]
 
-if !enable_advanced_simd Libraries [
+if !enable_advanced_simd Libraries
+[
     GS-SSE4
     GS-AVX
     GS-AVX2
 ]
 
-Libraries [
+Libraries
+[
     pcsx2
     
     common
@@ -84,7 +88,8 @@ Libraries [
     rainterface
 ]
 
-if windows Libraries [
+if windows Libraries
+[
     freetype
     libjpeg
     libpng16

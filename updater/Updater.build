@@ -1,27 +1,28 @@
 Assembly %_FileName
-Type     app
+Assert.WorkingDirectory .
 
-include ../common.buildvars
+Depends common     ../common
+Depends lzma       ../3rdparty/lzma
 
-BuildDirectory ../bin
+include           ../common.buildvars
 
-Depends common ../common
-Depends lzma ../3rdparty/lzma
+BuildDirectory     ../bin
 
-if windows LinkerFlags /MANIFESTINPUT:Windows/updater.manifest /MANIFEST:EMBED
+Includes           . .. ../3rdparty/fmt/include ../3rdparty/fast_float/include ../3rdparty/lzma/include ../3rdparty/winwil/include
 
-Includes . .. ../3rdparty/fmt/include ../3rdparty/fast_float/include ../3rdparty/lzma/include ../3rdparty/winwil/include
-if windows Includes Windows
-
-if !windows ExcludedSourceDirectories Windows
-
-Libraries common fmt
+Libraries          common fmt
 LibraryDirectories ../common/Build ../3rdparty/fmt/bin/Release
-if windows LibraryDirectories ../3rdparty/lzma/bin
 
-if windows Libraries [
-    lzma
-    %_NativeLibs
-]
+if windows
+{
+    Includes Windows
 
-AssertWorkingDirectory .
+    LinkerFlags /MANIFESTINPUT:Windows/updater.manifest /MANIFEST:EMBED
+
+    Libraries lzma %_NativeLibs
+    LibraryDirectories ../3rdparty/lzma/bin
+}
+else
+{
+    ExcludedSourceDirectories Windows
+}

@@ -5,25 +5,37 @@ include ../common.buildvars
 
 Depends fmt ../3rdparty/fmt
 
-if !./svnrev.h PreBuild.Cmd call vsprops/preBuild.cmd
+if windows
+{
+    if !./svnrev.h PreBuild.Cmd call vsprops/preBuild.cmd
 
-if !../deps/ if windows {
-    # this would've been so nice to have but unfortunately the pcsx2 dev team are so retarded that
-    # they zip the dependencies in a format that windows does not recognize natively, therefore 
-    # the user would have to go and download third-party software just to extract the contents of 
-    # the damn thing, where we could just do that easily without 7-Zip
-    # i just hate how complicated they make their life for no reason at all.
-       # PreDepend.Download https://github.com/PCSX2/pcsx2-windows-dependencies/releases/download/latest-windows-dependencies/pcsx2-windows-dependencies.7z ../
+    DepsFolder ../deps/
 
-    # i'll be hosting the dependencies on my own github repo, until they smarten up and simplify things
+    if !$DepsFolder
+    {
+        ##
+        PreDepend.Download https://github.com/PCSX2/pcsx2-windows-dependencies/releases/download/latest-windows-dependencies/pcsx2-windows-dependencies.7z ../
+        this would've been so nice to have but unfortunately the pcsx2 dev team are so retarded that
+        they zip the dependencies in a format that windows does not recognize natively, therefore 
+        the user would have to go and download third-party software just to extract the contents of 
+        the damn thing, where we could just do that easily without 7-Zip
+        i just hate how complicated they make their life for no reason at all.
 
-    PreDepend.Log      pcsx2 Windows Dependencies not found. Acquiring latest binaries... (this may take a few minutes to download)
-    PreDepend.Download https://github.com/AliElSaleh/pcxs2-windows-dependencies/releases/download/v1.0.0/pcsx2-windows-dependencies.zip ..
-    PreDepend.Unzip    ../pcsx2-windows-dependencies.zip ../deps
-    PreDepend.Delete   ../pcsx2-windows-dependencies.zip
+        i'll be hosting the dependencies on my own github repo, until they smarten up and simplify things
+        ##
+
+        PreDepend
+        {
+            Log      pcsx2 Windows Dependencies not found. Acquiring latest binaries... (this may take a few minutes to download)
+            Download https://github.com/AliElSaleh/pcxs2-windows-dependencies/releases/download/v1.0.0/pcsx2-windows-dependencies.zip ..
+            Unzip    ../pcsx2-windows-dependencies.zip $DepsFolder
+            Delete   ../pcsx2-windows-dependencies.zip
+        }
+    }
 }
 
-Includes [
+Includes
+[
     .
     ..
     ../deps/include
@@ -35,7 +47,8 @@ Includes [
     ../3rdparty/libwebp/src
 ]
 
-IncludedSourceFiles [
+IncludedSourceFiles
+[
     AlignedMalloc.cpp
     Assertions.cpp
     Console.cpp
@@ -65,7 +78,8 @@ IncludedSourceFiles [
 if windows  IncludedSourceFiles FastJmp.asm
 if !windows IncludedSourceFiles FastJmp.cpp
 
-if x86 IncludedSourceFiles [
+if x86 IncludedSourceFiles
+[
     emitter/avx.cpp
     emitter/bmi.cpp
     emitter/fpu.cpp
@@ -78,8 +92,8 @@ if x86 IncludedSourceFiles [
     emitter/x86emitter.cpp
 ]
 
-if windows IncludedSourceFiles [
-    #FastJmp.asm
+if windows IncludedSourceFiles
+[
     HTTPDownloaderWinHTTP.cpp
     StackWalker.cpp
     Windows/WinThreads.cpp
@@ -87,31 +101,41 @@ if windows IncludedSourceFiles [
     Windows/WinMisc.cpp
 ]
 
-if apple IncludedSourceFiles [
+if apple IncludedSourceFiles
+[
     CocoaTools.mm
     Darwin/DarwinThreads.cpp
     Darwin/DarwinMisc.cpp
 ]
 
-if linux IncludedSourceFiles [
+if linux IncludedSourceFiles
+[
     Linux/LnxHostSys.cpp
     Linux/LnxThreads.cpp
     Linux/LnxMisc.cpp
 ]
 
-if !windows IncludedSourceFiles [
+if !windows IncludedSourceFiles
+[
     HTTPDownloaderCurl.cpp
 ]
 
-if apple CompilerFlags -fobjc-arc
-if apple LinkerFlags   -fobjc-link-runtime -framework Foundation -framework IOKit
+if apple
+{
+    CompilerFlags -fobjc-arc
+    LinkerFlags   -fobjc-link-runtime -framework Foundation -framework IOKit
+}
 
-AssertWorkingDirectory .
-AssertCompiler         clang clang++ cl
-AssertPlatform         Windows Mac Linux
-AssertArchitecture     x64
+Assert
+{
+    WorkingDirectory .
+    Compiler         clang clang++ cl
+    Platform         Windows Mac Linux
+    Architecture     x64
+}
 
-if mac Arch.arm|arm64.ErrorMessage {
+if mac Arch.arm.ErrorMessage
+{
     *************** UNSUPPORTED CONFIGURATION ***************
 
     Apple Silicon support in PCSX2 is INCOMPLETE. There are
@@ -124,7 +148,8 @@ if mac Arch.arm|arm64.ErrorMessage {
     *********************************************************
 }
 
-Compiler.*.ErrorMessage {
+Compiler.*.ErrorMessage
+{
     *************** UNSUPPORTED CONFIGURATION ***************
     
     You are not compiling PCSX2 with a supported compiler.

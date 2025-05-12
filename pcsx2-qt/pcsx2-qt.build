@@ -1,6 +1,5 @@
 Assembly %_FileName
-Type     app
-RunAssembly
+.run
 
 include ../common.buildvars
 
@@ -26,12 +25,14 @@ Depends ccc           ../3rdparty/ccc
 Depends d3d12memalloc ../3rdparty/d3d12memalloc
 Depends rainterface   ../3rdparty/rainterface
 
-Depends  QtMetaData | moc %%gen
-Depends  QtMetaData | uic %%gen
-Depends  QtMetaData | rcc %%gen
+Depends QtMetaData | moc %%gen
+Depends QtMetaData | uic %%gen
+Depends QtMetaData | rcc %%gen
+
 Depends! QtMetaData | lrelease %%gen
 
-Includes [
+Includes
+[
     .
     ..
     ../common
@@ -68,7 +69,8 @@ Includes [
 Defines ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION
 Defines QT_NO_EXCEPTIONS
 
-IncludedSourceFiles [
+IncludedSourceFiles
+[
     AboutDialog.cpp
     AutoUpdaterDialog.cpp
     ColorPickerButton.cpp
@@ -142,9 +144,10 @@ IncludedSourceFiles [
     Generated/rcc/qrc_*.cpp
 ]
 
-if windows IncludedSourceFiles VCRuntimeChecker.cpp
+IncludedSourceFiles:windows VCRuntimeChecker.cpp
 
-Libraries [
+Libraries
+[
     pcsx2
 
     Qt6Core
@@ -175,7 +178,8 @@ Libraries [
     rainterface
 ]
 
-if !enable_advanced_simd Libraries [
+if !enable_advanced_simd Libraries
+[
     GS-SSE4
     GS-AVX
     GS-AVX2
@@ -183,7 +187,8 @@ if !enable_advanced_simd Libraries [
 
 # glad WinPixEventRuntime
 
-if windows Libraries [
+if windows Libraries
+[
     #WIL
     freetype
     libjpeg
@@ -218,7 +223,8 @@ if !windows Libraries PCAP
 
 # would be nice to do this ../3rdparty/*/bin
 
-LibraryDirectories [
+LibraryDirectories
+[
     ../pcsx2/Build ../deps/lib ../3rdparty/lzma/bin
     ../common/Build ../3rdparty/imgui/bin ../3rdparty/fmt/bin/Release
     ../3rdparty/rapidyaml/bin ../3rdparty/libchdr/bin ../3rdparty/libzip/bin
@@ -229,39 +235,41 @@ LibraryDirectories [
 ]
 
 # this would be nice
-#PostBuild.Copy ../deps/bin/*.dll              $(BuildDirectory)/
+#PostBuild.Copy ../deps/bin/*.dll              $BuildDirectory/
 
-PostBuild.Copy! ../deps/bin/Qt6Core.dll        $(BuildDirectory)/
-PostBuild.Copy! ../deps/bin/Qt6Gui.dll         $(BuildDirectory)/
-PostBuild.Copy! ../deps/bin/Qt6Widgets.dll     $(BuildDirectory)/
-PostBuild.Copy! ../deps/bin/Qt6Network.dll     $(BuildDirectory)/
-PostBuild.Copy! ../deps/bin/Qt6Svg.dll         $(BuildDirectory)/
-PostBuild.Copy! ../deps/bin/lz4.dll            $(BuildDirectory)/
-PostBuild.Copy! ../deps/bin/libjpeg.dll        $(BuildDirectory)/
-PostBuild.Copy! ../deps/bin/libwebp.dll        $(BuildDirectory)/
-PostBuild.Copy! ../deps/bin/zstd.dll           $(BuildDirectory)/
-PostBuild.Copy! ../deps/bin/harfbuzz.dll       $(BuildDirectory)/
-PostBuild.Copy! ../deps/bin/libsharpyuv.dll    $(BuildDirectory)/
-PostBuild.Copy! ../deps/bin/freetype.dll       $(BuildDirectory)/
-PostBuild.Copy! ../deps/bin/SDL2.dll           $(BuildDirectory)/
-PostBuild.Copy! ../deps/bin/libpng16.dll       $(BuildDirectory)/
-PostBuild.Copy! ../deps/bin/zlib1.dll          $(BuildDirectory)/
-PostBuild.Copy! ../deps/bin/shaderc_shared.dll $(BuildDirectory)/
+PostBuild.Copy! ../deps/bin/Qt6Core.dll        $BuildDirectory/
+PostBuild.Copy! ../deps/bin/Qt6Gui.dll         $BuildDirectory/
+PostBuild.Copy! ../deps/bin/Qt6Widgets.dll     $BuildDirectory/
+PostBuild.Copy! ../deps/bin/Qt6Network.dll     $BuildDirectory/
+PostBuild.Copy! ../deps/bin/Qt6Svg.dll         $BuildDirectory/
+PostBuild.Copy! ../deps/bin/lz4.dll            $BuildDirectory/
+PostBuild.Copy! ../deps/bin/libjpeg.dll        $BuildDirectory/
+PostBuild.Copy! ../deps/bin/libwebp.dll        $BuildDirectory/
+PostBuild.Copy! ../deps/bin/zstd.dll           $BuildDirectory/
+PostBuild.Copy! ../deps/bin/harfbuzz.dll       $BuildDirectory/
+PostBuild.Copy! ../deps/bin/libsharpyuv.dll    $BuildDirectory/
+PostBuild.Copy! ../deps/bin/freetype.dll       $BuildDirectory/
+PostBuild.Copy! ../deps/bin/SDL2.dll           $BuildDirectory/
+PostBuild.Copy! ../deps/bin/libpng16.dll       $BuildDirectory/
+PostBuild.Copy! ../deps/bin/zlib1.dll          $BuildDirectory/
+PostBuild.Copy! ../deps/bin/shaderc_shared.dll $BuildDirectory/
 
-# need to support this
-#if !$(BuildDirectory)/QtPlugins
+PluginsDir      $BuildDirectory/QtPlugins/
+TranslationsDir $BuildDirectory/translations/
 
-if !../bin/QtPlugins/ {
-    PostBuild.NewDirectory $(BuildDirectory)/QtPlugins
-    if windows PostBuild.Cmd xcopy "..\deps\plugins\*" "$(BuildDirectory)\QtPlugins" /E /I /Y
+if !$PluginsDir|gen
+{
+    PostBuild.NewDirectory $PluginsDir
+    if windows PostBuild.Cmd xcopy "..\deps\plugins\*" "$PluginsDir" /E /I /Y
     
     # need to support this natively
-    #PostBuild.Copy ../deps/plugins/ $(BuildDirectory)/QtPlugins/
+    #PostBuild.Copy ../deps/plugins/ $PluginsDir
 }
 
-if !../bin/translations/ {
-    PostBuild.NewDirectory $(BuildDirectory)/translations
-    if windows PostBuild.Cmd xcopy "Generated\lrelease\*.qm" "$(BuildDirectory)\translations" /E /I /Y
+if !$TranslationsDir|gen
+{
+    PostBuild.NewDirectory $TranslationsDir
+    if windows PostBuild.Cmd xcopy "Generated\lrelease\*.qm" "$TranslationsDir" /E /I /Y
 }
 
-AssertWorkingDirectory .
+Assert.WorkingDirectory .

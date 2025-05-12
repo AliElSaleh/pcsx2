@@ -1,7 +1,8 @@
 Assembly pcsx2
 Type     static_lib
 
-AssertWorkingDirectory .
+Assert.WorkingDirectory .
+Assert.CPUExtension avx2
 
 include ../common.buildvars
 
@@ -17,7 +18,8 @@ IntermediateDirectory Intermediate/pcsx2
 
 if mac LinkerFlags -Wl,-dead_strip,-dead_strip_dylibs
 
-Includes [
+Includes
+[
     .
     ..
     ../common
@@ -63,7 +65,8 @@ if x86   Includes ../3rdparty/xbyak
 Defines ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION
 
 # main pcsx2 source files
-PCSX2Sources [
+PCSX2Sources
+[
     Achievements.cpp
     Cache.cpp
     COP0.cpp
@@ -148,8 +151,8 @@ PCSX2Sources [
     VUops.cpp
 ]
 
-# CDVD sources
-CDVDSources [
+CDVDSources
+[
     CDVD/BlockdumpFileReader.cpp
     CDVD/Ps1CD.cpp
     CDVD/CDVDcommon.cpp
@@ -168,7 +171,8 @@ CDVDSources [
     CDVD/ThreadedFileReader.cpp
 ]
 
-SPU2Sources [
+SPU2Sources
+[
     SPU2/ADSR.cpp
     SPU2/Debug.cpp
     SPU2/Dma.cpp
@@ -184,8 +188,8 @@ SPU2Sources [
 
 SPU2SourcesUnshared SPU2/ReverbResample.cpp
 
-# DEV9 sources
-DEV9Sources [
+DEV9Sources
+[
     DEV9/AdapterUtils.cpp
     DEV9/ATA/Commands/ATA_Command.cpp
     DEV9/ATA/Commands/ATA_CmdDMA.cpp
@@ -231,7 +235,8 @@ DEV9Sources [
     DEV9/net.cpp
 ]
 
-USBSources [
+USBSources
+[
     USB/USB.cpp
     USB/deviceproxy.cpp
     USB/qemu-usb/bus.cpp
@@ -264,8 +269,8 @@ USBSources [
     USB/usb-printer/usb-printer.cpp
 ]
 
-# Host PAD
-PADSources [
+PADSources
+[
     SIO/Pad/Pad.cpp
     SIO/Pad/PadBase.cpp
     SIO/Pad/PadDualshock2.cpp
@@ -276,8 +281,8 @@ PADSources [
     SIO/Pad/PadNotConnected.cpp
 ]
 
-# GS sources
-GSSourcesUnshared [
+GSSourcesUnshared
+[
     GS/GSBlock.cpp
     GS/GSLocalMemoryMultiISA.cpp
     GS/GSXXH.cpp
@@ -288,17 +293,20 @@ GSSourcesUnshared [
     GS/Renderers/SW/GSRendererSW.cpp
 ]
 
-if x86 GSSourcesUnshared [
+if x86 GSSourcesUnshared
+[
     GS/Renderers/SW/GSDrawScanlineCodeGenerator.all.cpp
     GS/Renderers/SW/GSSetupPrimCodeGenerator.all.cpp
 ]
 
-if arm64 GSSourcesUnshared [
+if arm64 GSSourcesUnshared
+[
     GS/Renderers/SW/GSDrawScanlineCodeGenerator.arm64.cpp
     GS/Renderers/SW/GSSetupPrimCodeGenerator.arm64.cpp
 ]
 
-GSSources [
+GSSources
+[
     GS/GS.cpp
     GS/GSCapture.cpp
     GS/GSClut.cpp
@@ -332,8 +340,10 @@ GSSources [
 graphics_api opengl
 if vulkan graphics_api vulkan
 
-if graphics_api == opengl {
-    GSSources [
+if graphics_api == opengl
+{
+    GSSources
+    [
         GS/Renderers/OpenGL/GLContext.cpp
         GS/Renderers/OpenGL/GLProgram.cpp
         GS/Renderers/OpenGL/GLShaderCache.cpp
@@ -346,15 +356,25 @@ if graphics_api == opengl {
     #target_link_libraries(PCSX2_FLAGS INTERFACE glad)
     #target_link_libraries(PCSX2_FLAGS INTERFACE opengl32.lib WinPixEventRuntime::WinPixEventRuntime)
 
-    if windows  GSSources GS/Renderers/OpenGL/GLContextWGL.cpp
-
-    if !windows GSSources GS/Renderers/OpenGL/GLContextEGL.cpp
-    if !windows GSSources GS/Renderers/OpenGL/GLContextEGLX11.cpp
-    if !windows GSSources GS/Renderers/OpenGL/GLContextEGLWayland.cpp
+    if windows
+    {
+        GSSources GS/Renderers/OpenGL/GLContextWGL.cpp
+    }
+    else
+    {
+        GSSources
+        [
+            GS/Renderers/OpenGL/GLContextEGL.cpp
+            GS/Renderers/OpenGL/GLContextEGLX11.cpp
+            GS/Renderers/OpenGL/GLContextEGLWayland.cpp
+        ]
+    }
 }
 
-if graphics_api == vulkan {
-    GSSources [
+if graphics_api == vulkan
+{
+    GSSources
+    [
         GS/Renderers/Vulkan/GSDeviceVK.cpp
         GS/Renderers/Vulkan/GSTextureVK.cpp
         GS/Renderers/Vulkan/vk_mem_alloc.cpp
@@ -368,7 +388,8 @@ if graphics_api == vulkan {
     #target_include_directories(PCSX2_FLAGS INTERFACE ${SHADERC_INCLUDE_DIR})
 }
 
-GSMetalShaders [
+GSMetalShaders
+[
     GS/Renderers/Metal/cas.metal
     GS/Renderers/Metal/convert.metal
     GS/Renderers/Metal/present.metal
@@ -379,17 +400,21 @@ GSMetalShaders [
     GS/Renderers/Metal/fxaa.metal
 ]
 
-if windows {
-    DEV9Sources [
+if windows
+{
+    DEV9Sources
+    [
         DEV9/Win32/pcap_io_win32.cpp
         DEV9/Win32/tap-win32.cpp
     ]
 
-    USBSources [
+    USBSources
+    [
         USB/usb-eyetoy/cam-windows.cpp
     ]
 
-    GSSources [
+    GSSources
+    [
         GS/Renderers/DX11/D3D.cpp
         GS/Renderers/DX11/D3D11ShaderCache.cpp
         GS/Renderers/DX11/GSDevice11.cpp
@@ -403,37 +428,41 @@ if windows {
     ]
 }
 
-if linux {
+if linux
+{
     USBSources USB/usb-eyetoy/cam-linux.cpp
 }
 
 if !windows if !linux USBSources USB/usb-eyetoy/cam-noop.cpp
 
 # IPU sources
-IPUSources [
+IPUSources
+[
     IPU/IPU.cpp
     IPU/IPU_Fifo.cpp
     IPU/IPUdma.cpp
 ]
 
-IPUSourcesUnshared [
+IPUSourcesUnshared
+[
     IPU/IPU_MultiISA.cpp
     IPU/IPUdither.cpp
     IPU/yuv2rgb.cpp
 ]
 
-if !enable_advanced_simd {
-    Defines MULTI_ISA_SHARED_COMPILATION
-}
-
-if enable_advanced_simd {
+if enable_advanced_simd
+{
     GSSources $GSSourcesUnshared
     IPUSources $IPUSourcesUnshared
     SPU2Sources $SPU2SourcesUnshared
 }
+else
+{
+    Defines MULTI_ISA_SHARED_COMPILATION
+}
 
-# DebugTools sources
-DebugToolsSources [
+DebugToolsSources
+[
     DebugTools/DebugInterface.cpp
     DebugTools/DisassemblyManager.cpp
     DebugTools/ExpressionParser.cpp
@@ -450,62 +479,71 @@ DebugToolsSources [
     DebugTools/BiosDebugData.cpp
 ]
 
-HostSources [
+HostSources
+[
     Host/AudioStream.cpp
     Host/CubebAudioStream.cpp
     Host/SDLAudioStream.cpp
 ]
 
-ImGuiSources [
+ImGuiSources
+[
     ImGui/FullscreenUI.cpp
     ImGui/ImGuiFullscreen.cpp
     ImGui/ImGuiManager.cpp
     ImGui/ImGuiOverlays.cpp
 ]
 
-InputSources [
+InputSources
+[
     Input/InputManager.cpp
     Input/InputSource.cpp
     Input/SDLInputSource.cpp
 ]
 
-if apple {
-    GSSources [
+if apple
+{
+    GSSources
+    [
         GS/Renderers/Metal/GSDeviceMTL.mm
         GS/Renderers/Metal/GSMTLDeviceInfo.mm
         GS/Renderers/Metal/GSTextureMTL.mm
     ]
 }
 
-if windows {
+if windows
+{
     # RAIntegration is only supported on Windows.
     #target_compile_definitions(PCSX2_FLAGS INTERFACE ENABLE_RAINTEGRATION)
     #target_link_libraries(PCSX2_FLAGS INTERFACE rainterface)
  
-    InputSources [
+    InputSources
+    [
         Input/DInputSource.cpp
         Input/XInputSource.cpp
     ]
 }
 
-# Linux sources
-if linux LinuxSources [
+if linux LinuxSources
+[
     CDVD/Linux/DriveUtility.cpp
     CDVD/Linux/IOCtlSrc.cpp
 ]
 
-if mac OSXSources [
+if mac OSXSources
+[
     CDVD/Darwin/DriveUtility.cpp
     CDVD/Darwin/IOCtlSrc.cpp
 ]
 
-if freebsd FreeBSDSources [
+if freebsd FreeBSDSources
+[
     CDVD/Darwin/DriveUtility.cpp
     CDVD/Darwin/IOCtlSrc.cpp
 ]
 
-# ps2 sources
-ps2Sources [
+ps2Sources
+[
     ps2/BiosTools.cpp
     ps2/pgif.cpp
     ps2/Iop/IopHwRead.cpp
@@ -513,8 +551,8 @@ ps2Sources [
     ps2/Iop/PsxBios.cpp
 ]
 
-# RDebug sources
-RDebugSources [
+RDebugSources
+[
     RDebug/deci2.cpp
     RDebug/deci2_dbgp.cpp
     RDebug/deci2_dcmp.cpp
@@ -524,8 +562,8 @@ RDebugSources [
     RDebug/deci2_ttyp.cpp
 ]
 
-# Recording sources
-RecordingSources [
+RecordingSources
+[
     Recording/InputRecording.cpp
     Recording/InputRecordingControls.cpp
     Recording/InputRecordingFile.cpp
@@ -533,15 +571,15 @@ RecordingSources [
     Recording/Utilities/InputRecordingLogger.cpp
 ]
 
-# Windows sources
-WindowsSources [
+WindowsSources
+[
     CDVD/Windows/DriveUtility.cpp
     CDVD/Windows/IOCtlSrc.cpp
     windows/Optimus.cpp
 ]
 
-# x86 sources
-x86Sources [
+x86Sources
+[
     x86/BaseblockEx.cpp
 	x86/microVU.cpp
     x86/iCOP0.cpp
@@ -569,8 +607,8 @@ x86Sources [
     x86/newVif_UnpackSSE.cpp
 ]
 
-# ARM64
-arm64Sources [
+arm64Sources
+[
     arm64/AsmHelpers.cpp
     arm64/newVif_Dynarec.cpp
     arm64/newVif_UnpackNEON.cpp
@@ -578,7 +616,8 @@ arm64Sources [
 ]
 
 # These ones benefit a lot from LTO
-LTOSources [
+LTOSources
+[
     $PCSX2Sources
     $IPUSources
     $SPU2Sources
@@ -587,11 +626,12 @@ LTOSources [
 
 #target_link_libraries(PCSX2_FLAGS INTERFACE zydis)
 #target_link_libraries(PCSX2_FLAGS INTERFACE vixl)
-if x86 LTOSources $x86Sources
+if x86   LTOSources $x86Sources
 if arm64 LTOSources $arm64Sources
 
 # common Sources
-IncludedSourceFiles [
+IncludedSourceFiles
+[
     $LTOSources
     $CDVDSources
     $DebugToolsSources
@@ -614,5 +654,3 @@ if apple   IncludedSourceFiles $OSXSources
 if freebsd IncludedSourceFiles $FreeBSDSourcesSources
 
 if apple   LinkerFlags -framework QuartzCore -framework Metal
-
-AssertCPUExtension avx2
