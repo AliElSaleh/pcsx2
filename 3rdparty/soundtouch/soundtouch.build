@@ -7,5 +7,5 @@ SourceDirectory        source
 BuildDirectory         bin
 IntermediateDirectory  int
 
-CompilerFlags          /EHsc
+Compiler.Flags          /EHsc
 Includes               source soundtouch

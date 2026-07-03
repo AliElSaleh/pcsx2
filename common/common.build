@@ -41,13 +41,13 @@ Includes
     ../deps/include
     ../3rdparty/include
     ../3rdparty/jpgd
-    ../3rdparty/fmt/include
+    #../3rdparty/fmt/include
     ../3rdparty/fast_float/include
     ../3rdparty/libpng
     ../3rdparty/libwebp/src
 ]
 
-IncludedSourceFiles
+SourceFiles
 [
     AlignedMalloc.cpp
     Assertions.cpp
@@ -75,10 +75,10 @@ IncludedSourceFiles
     WindowInfo.cpp
 ]
 
-if windows  IncludedSourceFiles FastJmp.asm
-if !windows IncludedSourceFiles FastJmp.cpp
+if windows  SourceFiles FastJmp.asm
+if !windows SourceFiles FastJmp.cpp
 
-if x86 IncludedSourceFiles
+if x86 SourceFiles
 [
     emitter/avx.cpp
     emitter/bmi.cpp
@@ -92,7 +92,7 @@ if x86 IncludedSourceFiles
     emitter/x86emitter.cpp
 ]
 
-if windows IncludedSourceFiles
+if windows SourceFiles
 [
     HTTPDownloaderWinHTTP.cpp
     StackWalker.cpp
@@ -101,29 +101,29 @@ if windows IncludedSourceFiles
     Windows/WinMisc.cpp
 ]
 
-if apple IncludedSourceFiles
+if apple SourceFiles
 [
     CocoaTools.mm
     Darwin/DarwinThreads.cpp
     Darwin/DarwinMisc.cpp
 ]
 
-if linux IncludedSourceFiles
+if linux SourceFiles
 [
     Linux/LnxHostSys.cpp
     Linux/LnxThreads.cpp
     Linux/LnxMisc.cpp
 ]
 
-if !windows IncludedSourceFiles
+if !windows SourceFiles
 [
     HTTPDownloaderCurl.cpp
 ]
 
 if apple
 {
-    CompilerFlags -fobjc-arc
-    LinkerFlags   -fobjc-link-runtime -framework Foundation -framework IOKit
+    Compiler.Flags -fobjc-arc
+    Linker.Flags   -fobjc-link-runtime -framework Foundation -framework IOKit
 }
 
 Assert

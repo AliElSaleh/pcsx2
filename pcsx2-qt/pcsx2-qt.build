@@ -29,7 +29,7 @@ Depends QtMetaData | moc %%gen
 Depends QtMetaData | uic %%gen
 Depends QtMetaData | rcc %%gen
 
-Depends! QtMetaData | lrelease %%gen
+Depends(no_rebuild_if_done_work) QtMetaData | lrelease %%gen
 
 Includes
 [
@@ -69,7 +69,7 @@ Includes
 Defines ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION
 Defines QT_NO_EXCEPTIONS
 
-IncludedSourceFiles
+SourceFiles
 [
     AboutDialog.cpp
     AutoUpdaterDialog.cpp
@@ -144,38 +144,19 @@ IncludedSourceFiles
     Generated/rcc/qrc_*.cpp
 ]
 
-IncludedSourceFiles:windows VCRuntimeChecker.cpp
+SourceFiles:windows VCRuntimeChecker.cpp
+
+Library.Paths ../deps/lib
 
 Libraries
 [
-    pcsx2
-
     Qt6Core
     Qt6Gui
     Qt6Widgets
     
-    common
-    imgui
-    fmt
-    rapidyaml
-    libchdr
-    libzip
-    cpuinfo
-    cubeb
-    rcheevos
-    discord-rpc
-    simpleini
-    freesurround
     SDL2
-    ZLIB
     LZ4
-    SoundTouch
-    libpng16
-    LZMA
     Zstd
-    demanglegnu
-    ccc
-    rainterface
 ]
 
 if !enable_advanced_simd Libraries
@@ -221,38 +202,30 @@ if windows Libraries
 
 if !windows Libraries PCAP
 
-# would be nice to do this ../3rdparty/*/bin
 
-LibraryDirectories
-[
-    ../pcsx2/Build ../deps/lib ../3rdparty/lzma/bin
-    ../common/Build ../3rdparty/imgui/bin ../3rdparty/fmt/bin/Release
-    ../3rdparty/rapidyaml/bin ../3rdparty/libchdr/bin ../3rdparty/libzip/bin
-    ../3rdparty/cpuinfo/bin ../3rdparty/cubeb/bin ../3rdparty/rcheevos/bin
-    ../3rdparty/discord-rpc/bin ../3rdparty/simpleini/bin ../3rdparty/freesurround/bin
-    ../3rdparty/soundtouch/bin ../3rdparty/demangler/bin
-    ../3rdparty/ccc/bin ../3rdparty/d3d12memalloc/bin ../3rdparty/rainterface/bin
-]
 
 # this would be nice
 #PostBuild.Copy ../deps/bin/*.dll              $BuildDirectory/
 
-PostBuild.Copy! ../deps/bin/Qt6Core.dll        $BuildDirectory/
-PostBuild.Copy! ../deps/bin/Qt6Gui.dll         $BuildDirectory/
-PostBuild.Copy! ../deps/bin/Qt6Widgets.dll     $BuildDirectory/
-PostBuild.Copy! ../deps/bin/Qt6Network.dll     $BuildDirectory/
-PostBuild.Copy! ../deps/bin/Qt6Svg.dll         $BuildDirectory/
-PostBuild.Copy! ../deps/bin/lz4.dll            $BuildDirectory/
-PostBuild.Copy! ../deps/bin/libjpeg.dll        $BuildDirectory/
-PostBuild.Copy! ../deps/bin/libwebp.dll        $BuildDirectory/
-PostBuild.Copy! ../deps/bin/zstd.dll           $BuildDirectory/
-PostBuild.Copy! ../deps/bin/harfbuzz.dll       $BuildDirectory/
-PostBuild.Copy! ../deps/bin/libsharpyuv.dll    $BuildDirectory/
-PostBuild.Copy! ../deps/bin/freetype.dll       $BuildDirectory/
-PostBuild.Copy! ../deps/bin/SDL2.dll           $BuildDirectory/
-PostBuild.Copy! ../deps/bin/libpng16.dll       $BuildDirectory/
-PostBuild.Copy! ../deps/bin/zlib1.dll          $BuildDirectory/
-PostBuild.Copy! ../deps/bin/shaderc_shared.dll $BuildDirectory/
+PostBuild
+{
+    Copy(if_not_exist) ../deps/bin/Qt6Core.dll        $BuildDirectory/
+    Copy(if_not_exist) ../deps/bin/Qt6Gui.dll         $BuildDirectory/
+    Copy(if_not_exist) ../deps/bin/Qt6Widgets.dll     $BuildDirectory/
+    Copy(if_not_exist) ../deps/bin/Qt6Network.dll     $BuildDirectory/
+    Copy(if_not_exist) ../deps/bin/Qt6Svg.dll         $BuildDirectory/
+    Copy(if_not_exist) ../deps/bin/lz4.dll            $BuildDirectory/
+    Copy(if_not_exist) ../deps/bin/libjpeg.dll        $BuildDirectory/
+    Copy(if_not_exist) ../deps/bin/libwebp.dll        $BuildDirectory/
+    Copy(if_not_exist) ../deps/bin/zstd.dll           $BuildDirectory/
+    Copy(if_not_exist) ../deps/bin/harfbuzz.dll       $BuildDirectory/
+    Copy(if_not_exist) ../deps/bin/libsharpyuv.dll    $BuildDirectory/
+    Copy(if_not_exist) ../deps/bin/freetype.dll       $BuildDirectory/
+    Copy(if_not_exist) ../deps/bin/SDL2.dll           $BuildDirectory/
+    Copy(if_not_exist) ../deps/bin/libpng16.dll       $BuildDirectory/
+    Copy(if_not_exist) ../deps/bin/zlib1.dll          $BuildDirectory/
+    Copy(if_not_exist) ../deps/bin/shaderc_shared.dll $BuildDirectory/
+}
 
 PluginsDir      $BuildDirectory/QtPlugins/
 TranslationsDir $BuildDirectory/translations/

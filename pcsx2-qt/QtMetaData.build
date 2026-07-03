@@ -1,16 +1,16 @@
 QtCompiler %%uic %%moc %%rcc %%lrelease
 Compiler ../deps/bin/$QtCompiler
 
-ExcludedSourceDirectories Generated
+SourceDirectories.Exclude Generated
 IntermediateDirectory Generated/$QtCompiler/.
 
-if uic      Extension .h   ; IncludedSourceFiles *.ui  ; Assembly.Prefix ui_
-if moc      Extension .cpp ; IncludedSourceFiles *.h   ; Assembly.Prefix moc_
-if rcc      Extension .cpp ; IncludedSourceFiles *.qrc ; Assembly.Prefix qrc_
-if lrelease Extension .qm  ; IncludedSourceFiles *.ts
+if uic      Extension .h   ; SourceFiles *.ui  ; Assembly.Prefix ui_
+if moc      Extension .cpp ; SourceFiles *.h   ; Assembly.Prefix moc_
+if rcc      Extension .cpp ; SourceFiles *.qrc ; Assembly.Prefix qrc_
+if lrelease Extension .qm  ; SourceFiles *.ts
 
-if lrelease  CompilerOutputFlag -qm
-if !lrelease CompilerOutputFlag -o
+if lrelease  Compiler.OutputFlag -qm
+if !lrelease Compiler.OutputFlag -o
 
 if gen AlwaysRebuild
 

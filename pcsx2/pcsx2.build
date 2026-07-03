@@ -16,7 +16,19 @@ if !enable_advanced_simd {
 
 IntermediateDirectory Intermediate/pcsx2
 
-if mac LinkerFlags -Wl,-dead_strip,-dead_strip_dylibs
+if mac Linker.Flags -Wl,-dead_strip,-dead_strip_dylibs
+
+# Some pcsx2 sources rely on the upstream PCH to provide std headers
+# (D3D12ShaderCache.h needs <string>, MemoryCardFolder.cpp needs <chrono>).
+# Force-include them so the sources build unmodified without the PCH.
+if windows 
+{
+    Compiler.Flags /FIstring /FIchrono
+}
+else
+{
+    Compiler.Flags -include string -include chrono
+}
 
 Includes
 [
@@ -630,7 +642,7 @@ if x86   LTOSources $x86Sources
 if arm64 LTOSources $arm64Sources
 
 # common Sources
-IncludedSourceFiles
+SourceFiles
 [
     $LTOSources
     $CDVDSources
@@ -648,9 +660,9 @@ IncludedSourceFiles
 # platform sources
 #target_link_libraries(PCSX2_FLAGS INTERFACE PkgConfig::LIBUDEV)
 
-if windows IncludedSourceFiles $WindowsSources
-if linux   IncludedSourceFiles $LinuxSources
-if apple   IncludedSourceFiles $OSXSources
-if freebsd IncludedSourceFiles $FreeBSDSourcesSources
+if windows SourceFiles $WindowsSources
+if linux   SourceFiles $LinuxSources
+if apple   SourceFiles $OSXSources
+if freebsd SourceFiles $FreeBSDSourcesSources
 
-if apple   LinkerFlags -framework QuartzCore -framework Metal
+if apple   Linker.Flags -framework QuartzCore -framework Metal

@@ -9,21 +9,21 @@ IntermediateDirectory  int
 
 Includes               include src ../rapidjson/include
 
-IncludedSourceFiles [
+SourceFiles [
 	discord_rpc.cpp
 	rpc_connection.cpp
 	serialization.cpp
 ]
 
-if windows IncludedSourceFiles [
+if windows SourceFiles [
 	connection_win.cpp
 	discord_register_win.cpp
 ]
 
-if apple IncludedSourceFiles [
+if apple SourceFiles [
 	discord_register_osx.m
 ]
 
-if unix IncludedSourceFiles connection_unix.cpp
+if unix SourceFiles connection_unix.cpp
 
-if linux IncludedSourceFiles discord_register_linux.cpp
+if linux SourceFiles discord_register_linux.cpp

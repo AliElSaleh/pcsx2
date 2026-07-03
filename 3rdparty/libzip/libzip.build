@@ -11,14 +11,12 @@ IntermediateDirectory int
 Includes              lib ../../deps/include
 Defines               __STDC_WANT_LIB_EXT1__=1 HAVE_CRYPTO
 
-#IncludedSourceDirectories lib
-#if windows IncludedSourceDirectories msvc
-
 if windows Includes   msvc
 if windows Defines    _CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_DEPRECATE HAVE_WINDOWS_CRYPTO
 if !windows Defines   HAVE_COMMONCRYPTO
 
-IncludedSourceFiles [
+SourceFiles
+[
   lib/zip_add.c
   lib/zip_add_dir.c
   lib/zip_add_entry.c
@@ -131,7 +129,8 @@ IncludedSourceFiles [
   lib/zip_algorithm_zstd.c
 ]
 
-if windows IncludedSourceFiles [
+SourceFiles:windows
+[
     lib/zip_source_file_win32.c
     lib/zip_source_file_win32_named.c
     lib/zip_source_file_win32_utf16.c
@@ -145,7 +144,8 @@ if windows IncludedSourceFiles [
     msvc/zip_err_str.c
 ]
 
-if unix IncludedSourceFiles [
+SourceFiles:unix
+[
     lib/zip_source_file_stdio_named.c
     lib/zip_random_unix.c
 ]

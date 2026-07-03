@@ -7,7 +7,7 @@ SourceDirectory        src
 BuildDirectory         bin
 IntermediateDirectory  int
 
-CompilerFlags          /EHsc
+Compiler.Flags          /EHsc
 Includes               include src ../../deps/include subprojects
 
 Defines [
@@ -17,7 +17,7 @@ Defines [
     RANDOM_PREFIX=speex
 ]
 
-IncludedSourceFiles [
+SourceFiles [
     cubeb.c
     cubeb_mixer.cpp
     cubeb_resampler.cpp

@@ -1,35 +1,54 @@
-Assembly fmt
-if shared  Type       dynamic_lib else Type     static_lib
-if windows Compiler   cl          else Compiler clang++
+Assembly     fmt
 
-SourceDirectory       src
-ExcludedSourceFiles   fmt.cc
-IntermediateDirectory int
+Type:shared  shared_library
+Type:!shared static_library
 
-Includes              include
+Compiler:windows msvc
+Compiler:!windows clang++
 
-if shared             Defines FMT_SHARED FMT_LIB_EXPORT else Defines FMT_STATIC
-if windows            Defines _WIN32
+SourceDirectory     src
+SourceFiles.Exclude fmt.cc
 
-if debug              BuildDirectory bin/Debug
-if !debug             BuildDirectory bin/Release
+BuildDirectory:debug  Build/Debug
+BuildDirectory:!debug Build/Release
 
-if debug              CompilerFlags $DebugFlags
-if !debug             CompilerFlags $ReleaseFlags
+Includes            include
+Includes.Public     include
 
-PedanticFlags
-if compiler == clang++ {
-    if pedantic       PedanticFlags -Wall -Wextra -pedantic -Wconversion -Wundef -Wdeprecated -Wweak-vtables -Wshadow -Wno-gnu-zero-variadic-macro-arguments
+Defines:shared      FMT_SHARED FMT_LIB_EXPORT
+Defines:!shared     FMT_STATIC
+Defines:windows     _WIN32
+Defines.Public:!shared FMT_STATIC
+Defines.Public:shared FMT_SHARED
 
-    DebugFlags        -std=c++20 -O0 $PedanticFlags
-    ReleaseFlags      -std=c++20 -O3 $PedanticFlags
+Compiler.Flags:debug   $DebugFlags
+Compiler.Flags:!debug  $ReleaseFlags
+
+if clang++
+{
+    PedanticFlags:pedantic -Wall -Wextra -pedantic -Wconversion -Wundef -Wdeprecated -Wweak-vtables -Wshadow -Wno-gnu-zero-variadic-macro-arguments
+
+    DebugFlags      -std=c++20 -O0 $PedanticFlags
+    ReleaseFlags    -std=c++20 -O3 $PedanticFlags
 }
 
-if compiler == cl {
-    DebugFlags        /std:c++20 /Od /EHa /Z7 $PedanticFlags
-    ReleaseFlags      /std:c++20 /O2 /EHa $PedanticFlags
+if cl
+{
+    DebugFlags      /std:c++20 /Od /EHa /Z7 $PedanticFlags
+    ReleaseFlags    /std:c++20 /O2 /EHa $PedanticFlags
 
-    if debug          LinkerFlags /DEBUG
-    if debug          Defines     _DEBUG
-    if !debug         Defines     NDEBUG
+    if shared
+    {
+        DebugFlags   /MDd
+        ReleaseFlags /MD
+    }
+    else
+    {
+        DebugFlags   /MTd
+        ReleaseFlags /MT
+    }
+
+    Linker.Flags:debug /DEBUG
+    Defines:debug      _DEBUG
+    Defines:!debug     NDEBUG
 }

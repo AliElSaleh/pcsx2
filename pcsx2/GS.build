@@ -7,8 +7,8 @@ include ../common.buildvars
 
 IntermediateDirectory Intermediate/$Assembly
 
-if isa == avx  CompilerFlags /arch:AVX
-if isa == avx2 CompilerFlags /arch:AVX2
+if isa == avx  Compiler.Flags /arch:AVX
+if isa == avx2 Compiler.Flags /arch:AVX2
 
 Defines ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION MULTI_ISA_UNSHARED_COMPILATION=isa_%isa
 
@@ -61,4 +61,4 @@ IPUSourcesUnshared
 
 SPU2SourcesUnshared SPU2/ReverbResample.cpp
 
-IncludedSourceFiles $GSSourcesUnshared $IPUSourcesUnshared $SPU2SourcesUnshared
+SourceFiles $GSSourcesUnshared $IPUSourcesUnshared $SPU2SourcesUnshared

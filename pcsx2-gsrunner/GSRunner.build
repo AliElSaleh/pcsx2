@@ -25,6 +25,12 @@ Depends ccc           ../3rdparty/ccc
 Depends d3d12memalloc ../3rdparty/d3d12memalloc
 Depends rainterface   ../3rdparty/rainterface
 
+if !enable_advanced_simd {
+    Depends ../pcsx2/GS.build | isa=sse4
+    Depends ../pcsx2/GS.build | isa=avx
+    Depends ../pcsx2/GS.build | isa=avx2
+}
+
 Includes
 [
     .
@@ -42,62 +48,27 @@ Includes
     ../3rdparty/winwil/include
 ]
 
-LibraryDirectories
-[
-    ../pcsx2/Build ../deps/lib ../3rdparty/lzma/bin
-    ../common/Build ../3rdparty/imgui/bin ../3rdparty/fmt/bin/Release
-    ../3rdparty/rapidyaml/bin ../3rdparty/libchdr/bin ../3rdparty/libzip/bin
-    ../3rdparty/cpuinfo/bin ../3rdparty/cubeb/bin ../3rdparty/rcheevos/bin
-    ../3rdparty/discord-rpc/bin ../3rdparty/simpleini/bin ../3rdparty/freesurround/bin
-    ../3rdparty/soundtouch/bin ../3rdparty/demangler/bin
-    ../3rdparty/ccc/bin ../3rdparty/d3d12memalloc/bin ../3rdparty/rainterface/bin
-]
-
-if !enable_advanced_simd Libraries
-[
-    GS-SSE4
-    GS-AVX
-    GS-AVX2
-]
+# Libraries built by our Depends (pcsx2, common, fmt, imgui, the GS ISA variants, etc.)
+# and their build directories propagate automatically. Only the prebuilt dependencies
+# in deps/lib and the OS libraries need to be spelled out.
+Library.Paths ../deps/lib
 
 Libraries
 [
-    pcsx2
-    
-    common
-    imgui
-    fmt
-    rapidyaml
-    libchdr
-    libzip
-    cpuinfo
-    cubeb
-    rcheevos
-    discord-rpc
-    simpleini
-    freesurround
     SDL2
     ZLIB
     LZ4
-    SoundTouch
     libpng16
-    LZMA
     Zstd
-    demanglegnu
-    ccc
-    rainterface
 ]
 
 if windows Libraries
 [
     freetype
     libjpeg
-    libpng16
-    zlibstatic
     libwebp
     libsharpyuv
     shaderc_shared
-    D3D12MemAlloc
     setupapi
     ws2_32
     shlwapi
