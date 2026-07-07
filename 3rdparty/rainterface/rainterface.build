@@ -7,4 +7,4 @@ BuildDirectory        bin
 IntermediateDirectory int
 
 CompilerFlags         /EHsc
-Includes              .
+Compiler.Includes     .

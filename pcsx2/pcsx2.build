@@ -30,7 +30,7 @@ else
     Compiler.Flags -include string -include chrono
 }
 
-Includes
+Compiler.Includes
 [
     .
     ..
@@ -70,11 +70,11 @@ Includes
     ../3rdparty/rainterface
 ]
 
-Defines C4_NO_DEBUG_BREAK
+Compiler.Defines C4_NO_DEBUG_BREAK
 
-if x86   Includes ../3rdparty/xbyak
+if x86   Compiler.Includes ../3rdparty/xbyak
 
-Defines ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION
+Compiler.Defines ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION
 
 # main pcsx2 source files
 PCSX2Sources
@@ -470,7 +470,7 @@ if enable_advanced_simd
 }
 else
 {
-    Defines MULTI_ISA_SHARED_COMPILATION
+    Compiler.Defines MULTI_ISA_SHARED_COMPILATION
 }
 
 DebugToolsSources

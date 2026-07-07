@@ -10,12 +10,12 @@ IntermediateDirectory Intermediate/$Assembly
 if isa == avx  Compiler.Flags /arch:AVX
 if isa == avx2 Compiler.Flags /arch:AVX2
 
-Defines ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION MULTI_ISA_UNSHARED_COMPILATION=isa_%isa
+Compiler.Defines ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION MULTI_ISA_UNSHARED_COMPILATION=isa_%isa
 
-if isa == sse4 Defines MULTI_ISA_IS_FIRST=1
-if isa != sse4 Defines MULTI_ISA_IS_FIRST=0
+if isa == sse4 Compiler.Defines MULTI_ISA_IS_FIRST=1
+if isa != sse4 Compiler.Defines MULTI_ISA_IS_FIRST=0
 
-Includes
+Compiler.Includes
 [
     .
     ..
@@ -26,7 +26,7 @@ Includes
     ../3rdparty/fast_float/include
 ]
 
-if x86 Includes ../3rdparty/xbyak
+if x86 Compiler.Includes ../3rdparty/xbyak
 
 GSSourcesUnshared
 [

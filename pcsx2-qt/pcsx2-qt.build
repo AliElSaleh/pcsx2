@@ -25,13 +25,9 @@ Depends ccc           ../3rdparty/ccc
 Depends d3d12memalloc ../3rdparty/d3d12memalloc
 Depends rainterface   ../3rdparty/rainterface
 
-Depends QtMetaData | moc %%gen
-Depends QtMetaData | uic %%gen
-Depends QtMetaData | rcc %%gen
-
 Depends(no_rebuild_if_done_work) QtMetaData | lrelease %%gen
 
-Includes
+Compiler.Includes
 [
     .
     ..
@@ -66,8 +62,8 @@ Includes
     Generated/uic
 ]
 
-Defines ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION
-Defines QT_NO_EXCEPTIONS
+Compiler.Defines ENABLE_RAINTEGRATION XBYAK_NO_EXCEPTION
+Compiler.Defines QT_NO_EXCEPTIONS
 
 SourceFiles
 [
@@ -159,15 +155,40 @@ Libraries
     Zstd
 ]
 
-if !enable_advanced_simd Libraries
-[
-    GS-SSE4
-    GS-AVX
-    GS-AVX2
-]
-
 # glad WinPixEventRuntime
 
+if windows Libraries
+[
+    setupapi
+    ws2_32
+    shlwapi
+    iphlpapi
+    dsound
+    dxguid
+    dinput8
+    hid
+    PowrProf
+    d3dcompiler
+    d3d11
+    d3d12
+    dxgi
+    strmiids
+    opengl32
+    comsuppw
+    dwmapi
+    OneCore
+
+    freetype
+    libjpeg
+    libpng16
+    zlibstatic
+    harfbuzz
+    libwebp
+    libsharpyuv
+    shaderc_shared
+]
+
+##
 if windows Libraries
 [
     #WIL
@@ -199,6 +220,7 @@ if windows Libraries
     dwmapi
     OneCore
 ]
+##
 
 if !windows Libraries PCAP
 

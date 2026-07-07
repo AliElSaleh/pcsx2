@@ -7,18 +7,18 @@ BuildDirectory         bin
 IntermediateDirectory  int
 SourceDirectory        src
 
-Includes               include src ../../deps/include deps/clog/include
-Defines                CPUINFO_LOG_TO_STDIO=1
+Compiler.Includes      include src ../../deps/include deps/clog/include
+Compiler.Defines       CPUINFO_LOG_TO_STDIO=1
 
-if !loglevel           Defines CPUINFO_LOG_LEVEL=2
-if loglevel == default Defines CPUINFO_LOG_LEVEL=2
-if loglevel == debug   Defines CPUINFO_LOG_LEVEL=5
-if loglevel == info    Defines CPUINFO_LOG_LEVEL=4
-if loglevel == warning Defines CPUINFO_LOG_LEVEL=3
-if loglevel == error   Defines CPUINFO_LOG_LEVEL=2
-if loglevel == fatal   Defines CPUINFO_LOG_LEVEL=1
+if !loglevel           Compiler.Defines CPUINFO_LOG_LEVEL=2
+if loglevel == default Compiler.Defines CPUINFO_LOG_LEVEL=2
+if loglevel == debug   Compiler.Defines CPUINFO_LOG_LEVEL=5
+if loglevel == info    Compiler.Defines CPUINFO_LOG_LEVEL=4
+if loglevel == warning Compiler.Defines CPUINFO_LOG_LEVEL=3
+if loglevel == error   Compiler.Defines CPUINFO_LOG_LEVEL=2
+if loglevel == fatal   Compiler.Defines CPUINFO_LOG_LEVEL=1
 
-if windows Defines     _WIN32_WINNT=0x0601 _CRT_SECURE_NO_WARNINGS
+if windows Compiler.Defines  _WIN32_WINNT=0x0601 _CRT_SECURE_NO_WARNINGS
 
 SourceFiles    src/api.c src/cache.c src/init.c src/log.c
 

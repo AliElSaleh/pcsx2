@@ -7,5 +7,5 @@ SourceDirectory       src
 BuildDirectory        bin
 IntermediateDirectory int
 
-Includes              include
-Defines               _7ZIP_ST
+Compiler.Includes     include
+Compiler.Defines      _7ZIP_ST

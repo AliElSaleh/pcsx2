@@ -7,8 +7,8 @@ SourceDirectory        src
 BuildDirectory         bin
 IntermediateDirectory  int
 
-Includes               include src
-Defines                RC_DISABLE_LUA=1 RCHEEVOS_URL_SSL=1 RC_NO_THREADS=1
+Compiler.Includes      include src
+Compiler.Defines       RC_DISABLE_LUA=1 RCHEEVOS_URL_SSL=1 RC_NO_THREADS=1
 
 SourceFiles [
 	rapi/rc_api_common.c

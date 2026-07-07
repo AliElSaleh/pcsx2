@@ -2,11 +2,11 @@
 if windows Compiler cl else Compiler clang++
 if !windows Assembler nasm
 
-if x86     Defines _M_X86
-if arm64   Defines _M_ARM64
-if _sse4.1 Defines __SSE4_1__
+if x86     Compiler.Defines _M_X86
+if arm64   Compiler.Defines _M_ARM64
+if _sse4.1 Compiler.Defines __SSE4_1__
 
-if windows Defines
+if windows Compiler.Defines
 [
     WINVER=0x0A00
     _WIN32_WINNT=0x0A00
@@ -34,5 +34,5 @@ WarningFlags -Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Wno-missi
 if pgo_generate CompilerFlags -fprofile-generate
 if pgo_optimize CompilerFlags -fprofile-use
 if pgo_generate|pgo_optimize CompilerFlags -fprofile-dir="profile"
-if asan LinkerFlags -faddress=sanitize ; Defines ASAN_WORKAROUND
+if asan LinkerFlags -faddress=sanitize ; Compiler.Defines ASAN_WORKAROUND
 ##

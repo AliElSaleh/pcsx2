@@ -7,5 +7,5 @@ SourceDirectory       src
 BuildDirectory        bin
 IntermediateDirectory int
 
-Includes              include ../fast_float/include
-Defines               C4_NO_DEBUG_BREAK
+Compiler.Includes     include ../fast_float/include
+Compiler.Defines      C4_NO_DEBUG_BREAK

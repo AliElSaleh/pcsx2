@@ -8,12 +8,12 @@ if windows Compiler cl
 BuildDirectory        bin
 IntermediateDirectory int
 
-Includes              lib ../../deps/include
-Defines               __STDC_WANT_LIB_EXT1__=1 HAVE_CRYPTO
+Compiler.Includes     lib ../../deps/include
+Compiler.Defines      __STDC_WANT_LIB_EXT1__=1 HAVE_CRYPTO
 
-if windows Includes   msvc
-if windows Defines    _CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_DEPRECATE HAVE_WINDOWS_CRYPTO
-if !windows Defines   HAVE_COMMONCRYPTO
+if windows Compiler.Includes  msvc
+if windows Compiler.Defines   _CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_DEPRECATE HAVE_WINDOWS_CRYPTO
+if !windows Compiler.Defines  HAVE_COMMONCRYPTO
 
 SourceFiles
 [

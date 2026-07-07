@@ -8,14 +8,14 @@ include           ../common.buildvars
 
 BuildDirectory     ../bin
 
-Includes           . .. ../3rdparty/fmt/include ../3rdparty/fast_float/include ../3rdparty/lzma/include ../3rdparty/winwil/include
+Compiler.Includes  . .. ../3rdparty/fmt/include ../3rdparty/fast_float/include ../3rdparty/lzma/include ../3rdparty/winwil/include
 
 Libraries          common fmt
 LibraryDirectories ../common/Build ../3rdparty/fmt/bin/Release
 
 if windows
 {
-    Includes Windows
+    Compiler.Includes Windows
 
     LinkerFlags /MANIFESTINPUT:Windows/updater.manifest /MANIFEST:EMBED
 

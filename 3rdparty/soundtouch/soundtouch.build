@@ -8,4 +8,4 @@ BuildDirectory         bin
 IntermediateDirectory  int
 
 Compiler.Flags          /EHsc
-Includes               source soundtouch
+Compiler.Includes      source soundtouch

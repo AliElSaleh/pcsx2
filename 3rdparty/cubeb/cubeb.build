@@ -8,9 +8,9 @@ BuildDirectory         bin
 IntermediateDirectory  int
 
 Compiler.Flags          /EHsc
-Includes               include src ../../deps/include subprojects
+Compiler.Includes      include src ../../deps/include subprojects
 
-Defines [
+Compiler.Defines [
     OUTSIDE_SPEEX
     FLOATING_POINT
     EXPORT=

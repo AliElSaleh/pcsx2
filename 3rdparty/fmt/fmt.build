@@ -12,14 +12,14 @@ SourceFiles.Exclude fmt.cc
 BuildDirectory:debug  Build/Debug
 BuildDirectory:!debug Build/Release
 
-Includes            include
-Includes.Public     include
+Compiler.Includes                include
+Compiler.Includes.Export         include
 
-Defines:shared      FMT_SHARED FMT_LIB_EXPORT
-Defines:!shared     FMT_STATIC
-Defines:windows     _WIN32
-Defines.Public:!shared FMT_STATIC
-Defines.Public:shared FMT_SHARED
+Compiler.Defines:shared          FMT_SHARED FMT_LIB_EXPORT
+Compiler.Defines:!shared         FMT_STATIC
+Compiler.Defines:windows         _WIN32
+Compiler.Defines.Export:!shared  FMT_STATIC
+Compiler.Defines.Export:shared   FMT_SHARED
 
 Compiler.Flags:debug   $DebugFlags
 Compiler.Flags:!debug  $ReleaseFlags
@@ -48,7 +48,7 @@ if cl
         ReleaseFlags /MT
     }
 
-    Linker.Flags:debug /DEBUG
-    Defines:debug      _DEBUG
-    Defines:!debug     NDEBUG
+    Linker.Flags:debug      /DEBUG
+    Compiler.Defines:debug  _DEBUG
+    Compiler.Defines:!debug NDEBUG
 }

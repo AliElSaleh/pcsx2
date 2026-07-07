@@ -7,7 +7,7 @@ SourceDirectory        src
 BuildDirectory         bin
 IntermediateDirectory  int
 
-Includes               include src ../rapidjson/include
+Compiler.Includes      include src ../rapidjson/include
 
 SourceFiles [
 	discord_rpc.cpp
