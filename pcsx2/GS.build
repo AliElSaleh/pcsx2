@@ -3,7 +3,7 @@ Assert.Arg isa
 Assembly %_FileName-%^isa
 Type     static_lib
 
-include ../common.buildvars
+import ../common.buildvars
 
 IntermediateDirectory Intermediate/$Assembly
 

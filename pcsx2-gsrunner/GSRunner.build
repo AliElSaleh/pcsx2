@@ -3,7 +3,7 @@ Type     app
 
 Assert.WorkingDirectory .
 
-include ../common.buildvars
+import ../common.buildvars
 
 BuildDirectory ../bin
 

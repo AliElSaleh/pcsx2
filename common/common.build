@@ -1,7 +1,7 @@
 Assembly Common
 Type     static_lib
 
-include ../common.buildvars
+import ../common.buildvars
 
 Depends fmt ../3rdparty/fmt
 

@@ -4,7 +4,7 @@ Assert.WorkingDirectory .
 Depends common     ../common
 Depends lzma       ../3rdparty/lzma
 
-include           ../common.buildvars
+import            ../common.buildvars
 
 BuildDirectory     ../bin
 

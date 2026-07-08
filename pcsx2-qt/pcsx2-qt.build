@@ -1,7 +1,7 @@
 Assembly %_FileName
 .run
 
-include ../common.buildvars
+import ../common.buildvars
 
 BuildDirectory ../bin
 
