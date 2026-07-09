@@ -2,7 +2,7 @@ Assembly pcsx2
 Type     static_lib
 
 Assert.WorkingDirectory .
-Assert.CPUExtension avx2
+Assert.CPUExtensions avx2
 
 import ../common.buildvars
 

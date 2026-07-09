@@ -15,4 +15,4 @@ if !lrelease Compiler.OutputFlag -o
 if gen AlwaysRebuild
 
 Assert.WorkingDirectory .
-Assert.Arg.OnlyOne uic moc rcc lrelease
+Assert.Arg(=1) uic moc rcc lrelease
